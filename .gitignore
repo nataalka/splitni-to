@@ -40,3 +40,9 @@ go.work.sum
 /dataSources/
 /dataSources.local.xml
 
+# Configuration files
+config/splitni-to.yaml
+
+# Binaries
+bin/
+/splitni-to
