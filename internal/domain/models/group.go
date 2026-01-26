@@ -7,9 +7,9 @@ import (
 )
 
 type Group struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	ID        uuid.UUID `json:"id" postgres:"id"`
+	Name      string    `json:"name" postgres:"name"`
+	CreatedAt time.Time `json:"created_at" postgres:"created_at"`
 	Members   []User    `json:"members,omitempty"`
 }
 
