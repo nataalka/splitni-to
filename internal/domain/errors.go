@@ -36,8 +36,12 @@ const (
 	TypeAuth       ErrorType = "UNAUTHORIZED"
 )
 
-func NewValidationError(msg string) *AppError {
-	return &AppError{Type: TypeValidation, Message: msg}
+func NewValidationError(msg string, errs ...error) *AppError {
+	var err error
+	if len(errs) > 0 {
+		err = errs[0]
+	}
+	return &AppError{Type: TypeValidation, Message: msg, Err: err}
 }
 
 func NewNotFoundError(msg string) *AppError {

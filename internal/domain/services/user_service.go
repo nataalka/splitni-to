@@ -53,7 +53,7 @@ func (s *UserService) Register(ctx context.Context, req models.CreateUser) (*mod
 	return user, nil
 }
 
-func (s *UserService) GetUser(ctx context.Context, id uuid.UUID) (*models.User, error) {
+func (s *UserService) GetByID(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	user, err := s.userRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
