@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/jwtauth/v5"
-	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/internal/domain"
 	"github.com/nataalka/splitni-to/internal/domain/models"
 	"github.com/nataalka/splitni-to/internal/domain/services"
@@ -22,16 +20,9 @@ func NewGroupHandler(gs *services.GroupService) *GroupHandler {
 func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, claims, _ := jwtauth.FromContext(r.Context())
-	sub, ok := claims["sub"].(string)
-	if !ok {
-		respondWithError(w, domain.NewAuthError("invalid token claims"))
-		return
-	}
-
-	userID, err := uuid.Parse(sub)
+	userID, err := getUserIDFromContext(ctx)
 	if err != nil {
-		respondWithError(w, domain.NewInternalError("invalid user id in token", err))
+		respondWithError(w, err)
 		return
 	}
 
@@ -49,4 +40,126 @@ func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, group)
+}
+
+func (h *GroupHandler) AddMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	groupID, err := parseUUID(r, "id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	var req models.AddMemberRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		respondWithError(w, domain.NewValidationError("invalid request body", err))
+		return
+	}
+
+	err = h.groupService.AddMemberToGroup(ctx, userID, groupID, req.UserID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *GroupHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	groupID, err := parseUUID(r, "id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	targetID, err := parseUUID(r, "userID")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	err = h.groupService.RemoveMember(ctx, userID, groupID, targetID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *GroupHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	groupID, err := parseUUID(r, "id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	group, err := h.groupService.GetByID(ctx, userID, groupID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, group)
+}
+
+func (h *GroupHandler) ListUsersGroups(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	groups, err := h.groupService.GetUserGroups(ctx, userID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, groups)
+}
+
+func (h *GroupHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	groupID, err := parseUUID(r, "id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	members, err := h.groupService.GetMembers(ctx, userID, groupID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, members)
 }

@@ -51,6 +51,15 @@ func userRoutes(cfg RouterConfig) *chi.Mux {
 func groupRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Post("/", cfg.GroupHandler.Create)
+	r.Get("/", cfg.GroupHandler.ListUsersGroups)
+	r.Route("/{id}", func(r chi.Router) {
+		r.Get("/", cfg.GroupHandler.GetByID)
+		r.Route("/members", func(r chi.Router) {
+			r.Get("/", cfg.GroupHandler.ListMembers)
+			r.Post("/", cfg.GroupHandler.AddMember)
+			r.Delete("/", cfg.GroupHandler.RemoveMember)
+		})
+	})
 	return r
 }
 

@@ -35,6 +35,7 @@ const (
 	TypeInternal           ErrorType = "INTERNAL_ERROR"
 	TypeAuth               ErrorType = "UNAUTHORIZED"
 	TypeInvalidCredentials ErrorType = "INVALID_CREDENTIALS"
+	TypePermission         ErrorType = "PERMISSION_DENIED"
 )
 
 func NewValidationError(msg string, errs ...error) *AppError {
@@ -65,7 +66,14 @@ func NewInvalidCredentialsError(msg string) *AppError {
 	return &AppError{Type: TypeInvalidCredentials, Message: msg}
 }
 
+func NewPermissionError(msg string) *AppError {
+	return &AppError{Type: TypePermission, Message: msg}
+}
+
 var (
-	ErrEmailTaken   = NewConflictError("email is already registered")
-	ErrUserNotFound = NewNotFoundError("user not found")
+	ErrEmailTaken     = NewConflictError("email is already registered")
+	ErrUserNotFound   = NewNotFoundError("user not found")
+	ErrGroupNotFound  = NewNotFoundError("group not found")
+	ErrAlreadyInGroup = NewConflictError("member is already in group")
+	ErrNotInGroup     = NewNotFoundError("member is not in group")
 )

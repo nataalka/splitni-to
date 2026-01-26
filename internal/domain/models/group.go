@@ -22,3 +22,7 @@ type GroupBalance struct {
 type CreateGroupRequest struct {
 	Name string `json:"name"`
 }
+
+type AddMemberRequest struct {
+	UserID uuid.UUID `json:"user_id"`
+}
