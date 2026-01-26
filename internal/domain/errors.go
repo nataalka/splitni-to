@@ -75,5 +75,5 @@ var (
 	ErrUserNotFound   = NewNotFoundError("user not found")
 	ErrGroupNotFound  = NewNotFoundError("group not found")
 	ErrAlreadyInGroup = NewConflictError("member is already in group")
-	ErrNotInGroup     = NewNotFoundError("member is not in group")
+	ErrNotInGroup     = NewPermissionError("member is not in group")
 )
