@@ -56,14 +56,14 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        credentials body models.CreateUserRequest true "Login credentials"
+// @Param        credentials body models.LoginRequest true "Login credentials"
 // @Success      200 {object} models.LoginResponse
 // @Failure      401 {object} domain.AppError
 // @Router       /login [post]
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var req models.CreateUserRequest
+	var req models.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		respondWithError(w, domain.NewValidationError("invalid request body", err))
@@ -75,7 +75,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.userService.Login(ctx, req.Email, req.Password, h.jwtSecret)
+	res, err := h.userService.Login(ctx, req, h.jwtSecret)
 	if err != nil {
 		respondWithError(w, err)
 		return

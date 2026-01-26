@@ -55,8 +55,8 @@ func (s *UserService) Register(ctx context.Context, req models.CreateUserRequest
 	return user, nil
 }
 
-func (s *UserService) Login(ctx context.Context, email, password string, jwtSecret string) (*models.LoginResponse, error) {
-	user, err := s.userRepo.GetByEmail(ctx, email)
+func (s *UserService) Login(ctx context.Context, req models.LoginRequest, jwtSecret string) (*models.LoginResponse, error) {
+	user, err := s.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return nil, domain.NewInvalidCredentialsError("invalid email or password")
@@ -64,7 +64,7 @@ func (s *UserService) Login(ctx context.Context, email, password string, jwtSecr
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password))
 	if err != nil {
 		return nil, domain.NewInvalidCredentialsError("wrong password")
 	}
