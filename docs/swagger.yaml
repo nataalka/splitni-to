@@ -1,0 +1,416 @@
+basePath: /api/v1
+definitions:
+  github_com_nataalka_splitni-to_internal_domain.AppError:
+    properties:
+      err: {}
+      message:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.ErrorType'
+    type: object
+  github_com_nataalka_splitni-to_internal_domain.ErrorType:
+    enum:
+    - VALIDATION_ERROR
+    - NOT_FOUND
+    - CONFLICT
+    - INTERNAL_ERROR
+    - UNAUTHORIZED
+    - INVALID_CREDENTIALS
+    - PERMISSION_DENIED
+    type: string
+    x-enum-varnames:
+    - TypeValidation
+    - TypeNotFound
+    - TypeConflict
+    - TypeInternal
+    - TypeAuth
+    - TypeInvalidCredentials
+    - TypePermission
+  github_com_nataalka_splitni-to_internal_domain_models.AddMemberRequest:
+    properties:
+      user_id:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.CreateGroupRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.FriendRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.Group:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+        type: array
+      name:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend for a group expense sharing application.
+  title: Splitni-to API
+  version: "1.0"
+paths:
+  /friends:
+    get:
+      description: Get a list of all accepted friends for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List all friends
+      tags:
+      - friends
+    post:
+      consumes:
+      - application/json
+      description: Send a new friend request using the target user's email
+      parameters:
+      - description: Friend's email
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.FriendRequest'
+      responses:
+        "201":
+          description: Created
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      security:
+      - BearerAuth: []
+      summary: Send friend request
+      tags:
+      - friends
+  /friends/{id}:
+    delete:
+      description: Remove a user from friends list or decline a request
+      parameters:
+      - description: Friend User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Remove friend
+      tags:
+      - friends
+  /friends/{id}/accept:
+    put:
+      description: Accept a pending friend request from another user
+      parameters:
+      - description: Requester User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Accept friend request
+      tags:
+      - friends
+  /friends/pending:
+    get:
+      description: Get all incoming friend requests that are waiting for approval
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List pending requests
+      tags:
+      - friends
+  /groups:
+    get:
+      description: Get a list of all groups the authenticated user belongs to
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Group'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List my groups
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Create a group and automatically add the creator as a member
+      parameters:
+      - description: Group name
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Group'
+      security:
+      - BearerAuth: []
+      summary: Create a new group
+      tags:
+      - groups
+  /groups/{id}:
+    get:
+      description: Fetch details of a specific group if the user is a member
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Group'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      security:
+      - BearerAuth: []
+      summary: Get group details
+      tags:
+      - groups
+  /groups/{id}/members:
+    get:
+      description: Get a list of all users in a specific group
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List group members
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to an existing group by their User ID
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID to add
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.AddMemberRequest'
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Permission denied
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+        "404":
+          description: Group not found
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      security:
+      - BearerAuth: []
+      summary: Add a member to a group
+      tags:
+      - groups
+  /groups/{id}/members/{userID}:
+    delete:
+      description: Remove a user from the group. Can be used for leaving or kicking
+        members.
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User ID to remove
+        in: path
+        name: userID
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      security:
+      - BearerAuth: []
+      summary: Remove a member from a group
+      tags:
+      - groups
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.LoginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      summary: User login
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account and return user data
+      parameters:
+      - description: Registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      summary: Register a new user
+      tags:
+      - auth
+  /users/{id}:
+    get:
+      description: Fetch user information by their unique ID
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain.AppError'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer <your_token>" to authenticate.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

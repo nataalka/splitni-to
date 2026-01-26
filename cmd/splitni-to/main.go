@@ -15,6 +15,16 @@ import (
 	"github.com/nataalka/splitni-to/internal/infrastructure/postgres"
 )
 
+// @title           Splitni-to API
+// @version         1.0
+// @description     Backend for a group expense sharing application.
+// @host            localhost:8080
+// @BasePath        /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer <your_token>" to authenticate.
 func main() {
 	configPath := flag.String("config", "config/splitni-to.yaml", "path to config file")
 	flag.Parse()

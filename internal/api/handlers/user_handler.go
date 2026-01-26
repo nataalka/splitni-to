@@ -21,6 +21,16 @@ func NewUserHandler(us *services.UserService, jwtSecret string) *UserHandler {
 	}
 }
 
+// Register godoc
+// @Summary      Register a new user
+// @Description  Create a new user account and return user data
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        user body models.CreateUserRequest true "Registration details"
+// @Success      201 {object} models.User
+// @Failure      400 {object} domain.AppError
+// @Router       /register [post]
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -40,6 +50,16 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, user)
 }
 
+// Login godoc
+// @Summary      User login
+// @Description  Authenticate user and return JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        credentials body models.CreateUserRequest true "Login credentials"
+// @Success      200 {object} models.LoginResponse
+// @Failure      401 {object} domain.AppError
+// @Router       /login [post]
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -64,6 +84,16 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, res)
 }
 
+// GetByID godoc
+// @Summary      Get user profile
+// @Description  Fetch user information by their unique ID
+// @Tags         users
+// @Security     BearerAuth
+// @Produce      json
+// @Param        id path string true "User UUID"
+// @Success      200 {object} models.User
+// @Failure      404 {object} domain.AppError
+// @Router       /users/{id} [get]
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

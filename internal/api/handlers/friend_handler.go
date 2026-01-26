@@ -17,6 +17,16 @@ func NewFriendHandler(fs *services.FriendService) *FriendHandler {
 	return &FriendHandler{friendService: fs}
 }
 
+// AddFriend godoc
+// @Summary      Send friend request
+// @Description  Send a new friend request using the target user's email
+// @Tags         friends
+// @Security     BearerAuth
+// @Accept       json
+// @Param        request body models.FriendRequest true "Friend's email"
+// @Success      201 "Created"
+// @Failure      404 {object} domain.AppError "User not found"
+// @Router       /friends [post]
 func (h *FriendHandler) AddFriend(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -42,6 +52,14 @@ func (h *FriendHandler) AddFriend(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// AcceptFriend godoc
+// @Summary      Accept friend request
+// @Description  Accept a pending friend request from another user
+// @Tags         friends
+// @Security     BearerAuth
+// @Param        id path string true "Requester User ID"
+// @Success      200 "OK"
+// @Router       /friends/{id}/accept [put]
 func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -66,6 +84,14 @@ func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// DeleteFriendship godoc
+// @Summary      Remove friend
+// @Description  Remove a user from friends list or decline a request
+// @Tags         friends
+// @Security     BearerAuth
+// @Param        id path string true "Friend User ID"
+// @Success      204 "No Content"
+// @Router       /friends/{id} [delete]
 func (h *FriendHandler) DeleteFriendship(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -89,6 +115,14 @@ func (h *FriendHandler) DeleteFriendship(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// ListPendingRequests godoc
+// @Summary      List pending requests
+// @Description  Get all incoming friend requests that are waiting for approval
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200 {array} models.User
+// @Router       /friends/pending [get]
 func (h *FriendHandler) ListPendingRequests(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -107,6 +141,14 @@ func (h *FriendHandler) ListPendingRequests(w http.ResponseWriter, r *http.Reque
 	writeJSON(w, http.StatusOK, pending)
 }
 
+// ListFriends godoc
+// @Summary      List all friends
+// @Description  Get a list of all accepted friends for the authenticated user
+// @Tags         friends
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200 {array} models.User
+// @Router       /friends [get]
 func (h *FriendHandler) ListFriends(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

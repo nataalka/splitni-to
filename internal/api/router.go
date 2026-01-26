@@ -4,7 +4,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
+	_ "github.com/nataalka/splitni-to/docs"
 	"github.com/nataalka/splitni-to/internal/api/handlers"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type RouterConfig struct {
@@ -20,6 +22,8 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		// public routes

@@ -1,0 +1,9 @@
+server:
+  environment: development
+  listen_address: ":8080"
+
+storage:
+  dsn: host=localhost port=5432 user=user password=pass dbname=splitni-to sslmode=disable
+
+auth:
+  jwt_secret: super-tajne-super-dlhe-tajomstvo
