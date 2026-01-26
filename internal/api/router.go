@@ -8,8 +8,9 @@ import (
 )
 
 type RouterConfig struct {
-	UserHandler  *handlers.UserHandler
-	GroupHandler *handlers.GroupHandler
+	UserHandler   *handlers.UserHandler
+	GroupHandler  *handlers.GroupHandler
+	FriendHandler *handlers.FriendHandler
 }
 
 func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
@@ -31,8 +32,10 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtauth.Verifier(tokenAuth))
 			r.Use(jwtauth.Authenticator(tokenAuth))
+
 			r.Mount("/users", userRoutes(cfg))
 			r.Mount("/groups", groupRoutes(cfg))
+			r.Mount("/friends", friendRoutes(cfg))
 		})
 	})
 
@@ -48,5 +51,17 @@ func userRoutes(cfg RouterConfig) *chi.Mux {
 func groupRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Post("/", cfg.GroupHandler.Create)
+	return r
+}
+
+func friendRoutes(cfg RouterConfig) *chi.Mux {
+	r := chi.NewRouter()
+
+	r.Get("/", cfg.FriendHandler.ListFriends)
+	r.Get("/pending", cfg.FriendHandler.ListPendingRequests)
+	r.Post("/", cfg.FriendHandler.AddFriend)
+	r.Put("/{id}/accept", cfg.FriendHandler.AcceptFriend)
+	r.Delete("/{id}", cfg.FriendHandler.DeleteFriendship)
+
 	return r
 }

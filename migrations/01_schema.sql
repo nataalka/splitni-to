@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id            UUID                NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
     name          VARCHAR(100)        NOT NULL,
@@ -10,14 +10,23 @@ CREATE TABLE users
     created_at    TIMESTAMP WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE groups
+CREATE TABLE IF NOT EXISTS friendships
+(
+    user_id1   UUID REFERENCES users (id) ON DELETE CASCADE,
+    user_id2   UUID REFERENCES users (id) ON DELETE CASCADE,
+    status     VARCHAR(20)              DEFAULT 'PENDING', -- PENDING, ACCEPTED
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id1, user_id2)
+);
+
+CREATE TABLE IF NOT EXISTS groups
 (
     id         UUID         NOT NULL    DEFAULT uuid_generate_v4() PRIMARY KEY,
     name       VARCHAR(100) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE group_members
+CREATE TABLE IF NOT EXISTS group_members
 (
     group_id  UUID REFERENCES groups (id) ON DELETE CASCADE,
     user_id   UUID REFERENCES users (id) ON DELETE CASCADE,
@@ -25,7 +34,7 @@ CREATE TABLE group_members
     PRIMARY KEY (group_id, user_id)
 );
 
-CREATE TABLE expenses
+CREATE TABLE IF NOT EXISTS expenses
 (
     id          UUID           NOT NULL  DEFAULT uuid_generate_v4() PRIMARY KEY,
     group_id    UUID REFERENCES groups (id) ON DELETE CASCADE,
@@ -35,7 +44,7 @@ CREATE TABLE expenses
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE expense_splits
+CREATE TABLE IF NOT EXISTS expense_splits
 (
     expense_id UUID REFERENCES expenses (id) ON DELETE CASCADE,
     user_id    UUID REFERENCES users (id) ON DELETE CASCADE,
