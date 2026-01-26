@@ -8,7 +8,8 @@ import (
 )
 
 type RouterConfig struct {
-	UserHandler *handlers.UserHandler
+	UserHandler  *handlers.UserHandler
+	GroupHandler *handlers.GroupHandler
 }
 
 func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
@@ -31,6 +32,7 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 			r.Use(jwtauth.Verifier(tokenAuth))
 			r.Use(jwtauth.Authenticator(tokenAuth))
 			r.Mount("/users", userRoutes(cfg))
+			r.Mount("/groups", groupRoutes(cfg))
 		})
 	})
 
@@ -40,5 +42,11 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 func userRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/{id}", cfg.UserHandler.GetByID)
+	return r
+}
+
+func groupRoutes(cfg RouterConfig) *chi.Mux {
+	r := chi.NewRouter()
+	r.Post("/", cfg.GroupHandler.Create)
 	return r
 }

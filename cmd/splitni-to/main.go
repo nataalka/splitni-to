@@ -44,8 +44,13 @@ func runApp(cfg *config.Config) error {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService, jwtSecret)
 
+	groupRepo := postgres.NewPostgresGroupRepository(db)
+	groupService := services.NewGroupService(groupRepo)
+	groupHandler := handlers.NewGroupHandler(groupService)
+
 	routerConfig := api.RouterConfig{
-		UserHandler: userHandler,
+		UserHandler:  userHandler,
+		GroupHandler: groupHandler,
 	}
 	router := api.NewRouter(routerConfig, jwtSecret)
 
