@@ -16,9 +16,10 @@ type UserHandler struct {
 	jwtSecret   string
 }
 
-func NewUserHandler(us *services.UserService) *UserHandler {
+func NewUserHandler(us *services.UserService, jwtSecret string) *UserHandler {
 	return &UserHandler{
 		userService: us,
+		jwtSecret:   jwtSecret,
 	}
 }
 

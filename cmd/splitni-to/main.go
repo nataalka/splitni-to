@@ -38,14 +38,16 @@ func runApp(cfg *config.Config) error {
 		return err
 	}
 
+	jwtSecret := cfg.Auth.JWTSecret
+
 	userRepo := postgres.NewPostgresUserRepository(db)
 	userService := services.NewUserService(userRepo)
-	userHandler := handlers.NewUserHandler(userService)
+	userHandler := handlers.NewUserHandler(userService, jwtSecret)
 
 	routerConfig := api.RouterConfig{
 		UserHandler: userHandler,
 	}
-	router := api.NewRouter(routerConfig)
+	router := api.NewRouter(routerConfig, jwtSecret)
 
 	log.Printf("Starting %s server on %s", cfg.Server.Environment, cfg.Server.ListenAddress)
 	return http.ListenAndServe(cfg.Server.ListenAddress, router)
