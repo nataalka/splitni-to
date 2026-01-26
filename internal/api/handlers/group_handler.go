@@ -25,28 +25,28 @@ func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	_, claims, _ := jwtauth.FromContext(r.Context())
 	sub, ok := claims["sub"].(string)
 	if !ok {
-		RespondWithError(w, domain.NewAuthError("invalid token claims"))
+		respondWithError(w, domain.NewAuthError("invalid token claims"))
 		return
 	}
 
 	userID, err := uuid.Parse(sub)
 	if err != nil {
-		RespondWithError(w, domain.NewInternalError("invalid user id in token", err))
+		respondWithError(w, domain.NewInternalError("invalid user id in token", err))
 		return
 	}
 
 	var req models.CreateGroupRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		RespondWithError(w, domain.NewValidationError("invalid request body", err))
+		respondWithError(w, domain.NewValidationError("invalid request body", err))
 		return
 	}
 
 	group, err := h.groupService.CreateGroup(ctx, req.Name, userID)
 	if err != nil {
-		RespondWithError(w, err)
+		respondWithError(w, err)
 		return
 	}
 
-	WriteJSON(w, http.StatusCreated, group)
+	writeJSON(w, http.StatusCreated, group)
 }

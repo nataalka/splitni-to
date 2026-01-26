@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
 
+	"github.com/go-chi/jwtauth/v5"
+	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/internal/domain"
 )
 
@@ -14,7 +17,7 @@ type ErrorResponse struct {
 	Code  string `json:"code,omitempty"`
 }
 
-func WriteJSON(w http.ResponseWriter, statusCode int, v any) {
+func writeJSON(w http.ResponseWriter, statusCode int, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(statusCode)
 	if v != nil {
@@ -24,7 +27,7 @@ func WriteJSON(w http.ResponseWriter, statusCode int, v any) {
 	}
 }
 
-func RespondWithError(w http.ResponseWriter, err error) {
+func respondWithError(w http.ResponseWriter, err error) {
 	var appErr *domain.AppError
 
 	status := http.StatusInternalServerError
@@ -57,5 +60,24 @@ func RespondWithError(w http.ResponseWriter, err error) {
 		log.Printf("[UNHANDLED ERROR]: %v", err)
 	}
 
-	WriteJSON(w, status, resp)
+	writeJSON(w, status, resp)
+}
+
+func getUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
+	_, claims, err := jwtauth.FromContext(ctx)
+	if err != nil {
+		return uuid.Nil, domain.NewInternalError("failed to get claims", err)
+	}
+
+	sub, ok := claims["sub"].(string)
+	if !ok {
+		return uuid.Nil, domain.NewAuthError("user_id (sub) not found in token claims")
+	}
+
+	userID, err := uuid.Parse(sub)
+	if err != nil {
+		return uuid.Nil, domain.NewAuthError("invalid user_id format in token")
+	}
+
+	return userID, nil
 }
