@@ -13,6 +13,7 @@ import (
 
 type UserHandler struct {
 	userService *services.UserService
+	jwtSecret   string
 }
 
 func NewUserHandler(us *services.UserService) *UserHandler {
@@ -24,10 +25,10 @@ func NewUserHandler(us *services.UserService) *UserHandler {
 func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var req models.CreateUser
+	var req models.CreateUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		RespondWithError(w, domain.NewValidationError("invalid json format", err))
+		RespondWithError(w, domain.NewValidationError("invalid request body", err))
 		return
 	}
 
@@ -40,7 +41,33 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusCreated, user)
 }
 
+func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req models.CreateUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		RespondWithError(w, domain.NewValidationError("invalid request body", err))
+		return
+	}
+
+	if req.Email == "" || req.Password == "" {
+		RespondWithError(w, domain.NewValidationError("email and password are required"))
+		return
+	}
+
+	res, err := h.userService.Login(ctx, req.Email, req.Password, h.jwtSecret)
+	if err != nil {
+		RespondWithError(w, err)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, res)
+}
+
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
@@ -48,7 +75,7 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.userService.GetByID(r.Context(), id)
+	user, err := h.userService.GetByID(ctx, id)
 	if err != nil {
 		RespondWithError(w, err)
 		return

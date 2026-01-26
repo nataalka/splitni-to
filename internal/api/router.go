@@ -26,6 +26,7 @@ func NewRouter(cfg RouterConfig) *chi.Mux {
 func userRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Post("/register", cfg.UserHandler.Register)
+	r.Post("/login", cfg.UserHandler.Login)
 	r.Get("/{id}", cfg.UserHandler.GetByID)
 	return r
 }

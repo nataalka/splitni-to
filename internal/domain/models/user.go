@@ -15,9 +15,14 @@ type User struct {
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 }
 
-type CreateUser struct {
+type CreateUserRequest struct {
 	Name     string `json:"name"`
 	Surname  string `json:"surname"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	User        *User  `json:"user"`
+	AccessToken string `json:"access_token"`
 }

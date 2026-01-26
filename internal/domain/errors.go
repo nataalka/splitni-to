@@ -29,11 +29,12 @@ func (e *AppError) Wrap(err error) *AppError {
 type ErrorType string
 
 const (
-	TypeValidation ErrorType = "VALIDATION_ERROR"
-	TypeNotFound   ErrorType = "NOT_FOUND"
-	TypeConflict   ErrorType = "CONFLICT"
-	TypeInternal   ErrorType = "INTERNAL_ERROR"
-	TypeAuth       ErrorType = "UNAUTHORIZED"
+	TypeValidation         ErrorType = "VALIDATION_ERROR"
+	TypeNotFound           ErrorType = "NOT_FOUND"
+	TypeConflict           ErrorType = "CONFLICT"
+	TypeInternal           ErrorType = "INTERNAL_ERROR"
+	TypeAuth               ErrorType = "UNAUTHORIZED"
+	TypeInvalidCredentials ErrorType = "INVALID_CREDENTIALS"
 )
 
 func NewValidationError(msg string, errs ...error) *AppError {
@@ -58,6 +59,10 @@ func NewInternalError(msg string, err error) *AppError {
 
 func NewAuthError(msg string) *AppError {
 	return &AppError{Type: TypeAuth, Message: msg}
+}
+
+func NewInvalidCredentialsError(msg string) *AppError {
+	return &AppError{Type: TypeInvalidCredentials, Message: msg}
 }
 
 var (

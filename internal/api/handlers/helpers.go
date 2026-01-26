@@ -48,7 +48,7 @@ func RespondWithError(w http.ResponseWriter, err error) {
 			status = http.StatusConflict
 		case domain.TypeNotFound:
 			status = http.StatusNotFound
-		case domain.TypeAuth:
+		case domain.TypeAuth, domain.TypeInvalidCredentials:
 			status = http.StatusUnauthorized
 		case domain.TypeInternal:
 			status = http.StatusInternalServerError
