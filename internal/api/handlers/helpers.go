@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/internal/domain"
@@ -53,6 +55,8 @@ func respondWithError(w http.ResponseWriter, err error) {
 			status = http.StatusNotFound
 		case domain.TypeAuth, domain.TypeInvalidCredentials:
 			status = http.StatusUnauthorized
+		case domain.TypePermission:
+			status = http.StatusForbidden
 		case domain.TypeInternal:
 			status = http.StatusInternalServerError
 		}
@@ -80,4 +84,18 @@ func getUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
 	}
 
 	return userID, nil
+}
+
+func parseUUID(r *http.Request, paramName string) (uuid.UUID, error) {
+	val := chi.URLParam(r, paramName)
+	if val == "" {
+		return uuid.Nil, domain.NewValidationError(fmt.Sprintf("missing parameter %s", paramName), nil)
+	}
+
+	id, err := uuid.Parse(val)
+	if err != nil {
+		return uuid.Nil, domain.NewValidationError(fmt.Sprintf("invalid UUID format for %s", paramName), err)
+	}
+
+	return id, nil
 }

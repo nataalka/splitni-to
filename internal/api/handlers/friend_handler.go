@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/internal/domain"
 	"github.com/nataalka/splitni-to/internal/domain/models"
 	"github.com/nataalka/splitni-to/internal/domain/services"
@@ -53,10 +51,9 @@ func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requesterIDStr := chi.URLParam(r, "id")
-	requesterID, err := uuid.Parse(requesterIDStr)
+	requesterID, err := parseUUID(r, "id")
 	if err != nil {
-		respondWithError(w, domain.NewValidationError("invalid user id", err))
+		respondWithError(w, err)
 		return
 	}
 
@@ -78,8 +75,10 @@ func (h *FriendHandler) DeleteFriendship(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	friendIDStr := chi.URLParam(r, "id")
-	friendID, _ := uuid.Parse(friendIDStr)
+	friendID, err := parseUUID(r, "id")
+	if err != nil {
+		respondWithError(w, err)
+	}
 
 	err = h.friendService.DeleteFriendship(ctx, userID, friendID)
 	if err != nil {

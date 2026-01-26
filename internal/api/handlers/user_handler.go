@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/internal/domain"
 	"github.com/nataalka/splitni-to/internal/domain/models"
 	"github.com/nataalka/splitni-to/internal/domain/services"
@@ -69,10 +67,9 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	idStr := chi.URLParam(r, "id")
-	id, err := uuid.Parse(idStr)
+	id, err := parseUUID(r, "id")
 	if err != nil {
-		respondWithError(w, domain.NewValidationError("invalid uuid format", err))
+		respondWithError(w, err)
 		return
 	}
 
