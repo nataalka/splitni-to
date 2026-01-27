@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import LoginPage from "@/pages/LoginPage"
-import { Toaster } from "@/components/ui/sonner.tsx";
-import RegisterPage from "@/pages/RegisterPage.tsx";
+import { Toaster } from "@/components/ui/sonner";
+import RegisterPage from "@/pages/RegisterPage";
+import GroupsPage from "@/pages/GroupsPage";
 
 export function App() {
   return (
@@ -12,6 +13,8 @@ export function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/groups" element={<GroupsPage />} />
 
         <Route path="*" element={<div className="p-10 text-center">404 - Not Found</div>} />
       </Routes>

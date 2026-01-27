@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
@@ -101,7 +99,7 @@ export default function RegisterPage() {
           </form>
         </CardContent>
         <CardFooter className="flex-col justify-center gap-4">
-          <Button type="submit" className="w-full">
+          <Button type="submit" form="register-form" className="w-full">
             Sign Up
           </Button>
           <p className="text-sm text-muted-foreground">
