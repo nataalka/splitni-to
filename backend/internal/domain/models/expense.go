@@ -31,7 +31,7 @@ type ExpenseSplitDetailed struct {
 
 type ExpenseDetailed struct {
 	ID          uuid.UUID              `json:"id"`
-	GroupID     uuid.UUID              `json:"group_id"`
+	Group       Group                  `json:"group"`
 	Payer       User                   `json:"payer"`
 	Amount      decimal.Decimal        `json:"amount"`
 	Currency    string                 `json:"currency"`

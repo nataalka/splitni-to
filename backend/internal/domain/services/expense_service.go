@@ -12,14 +12,16 @@ import (
 )
 
 type ExpenseService struct {
-	repo     repositories.ExpenseRepository
-	userRepo repositories.UserRepository
+	repo      repositories.ExpenseRepository
+	userRepo  repositories.UserRepository
+	groupRepo repositories.GroupRepository
 }
 
-func NewExpenseService(e repositories.ExpenseRepository, u repositories.UserRepository) *ExpenseService {
+func NewExpenseService(e repositories.ExpenseRepository, u repositories.UserRepository, g repositories.GroupRepository) *ExpenseService {
 	return &ExpenseService{
-		repo:     e,
-		userRepo: u,
+		repo:      e,
+		userRepo:  u,
+		groupRepo: g,
 	}
 }
 
@@ -65,6 +67,11 @@ func (s *ExpenseService) GetExpenseDetailed(ctx context.Context, expenseID uuid.
 		return nil, domain.ErrExpenseNotFound
 	}
 
+	group, err := s.groupRepo.GetByID(ctx, expense.GroupID)
+	if err != nil {
+		return nil, domain.ErrGroupNotFound
+	}
+
 	userIDs := []uuid.UUID{expense.PayerID}
 	for _, split := range expense.Splits {
 		userIDs = append(userIDs, split.UserID)
@@ -90,7 +97,7 @@ func (s *ExpenseService) GetExpenseDetailed(ctx context.Context, expenseID uuid.
 
 	return &models.ExpenseDetailed{
 		ID:          expense.ID,
-		GroupID:     expense.GroupID,
+		Group:       *group,
 		Payer:       userMap[expense.PayerID],
 		Amount:      expense.Amount,
 		Currency:    expense.Currency,
