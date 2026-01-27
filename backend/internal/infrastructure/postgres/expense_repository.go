@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/nataalka/splitni-to/backend/internal/domain/models"
 	"github.com/shopspring/decimal"
 )
@@ -53,14 +54,47 @@ func (r *ExpenseRepository) GetByGroup(ctx context.Context, groupID uuid.UUID) (
 	defer rows.Close()
 
 	var expenses []models.Expense
+	var expenseIDs []uuid.UUID
+
 	for rows.Next() {
 		var e models.Expense
 		err = rows.Scan(&e.ID, &e.GroupID, &e.PayerID, &e.Amount, &e.Currency, &e.Description, &e.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
+		e.Splits = []models.ExpenseSplit{}
 		expenses = append(expenses, e)
+		expenseIDs = append(expenseIDs, e.ID)
 	}
+
+	if len(expenses) == 0 {
+		return expenses, nil
+	}
+
+	querySplits := `SELECT expense_id, user_id, amount FROM expense_splits WHERE expense_id = ANY($1)`
+
+	splitRows, err := r.db.QueryContext(ctx, querySplits, pq.Array(expenseIDs))
+	if err != nil {
+		return expenses, nil
+	}
+	defer splitRows.Close()
+
+	splitsByExpense := make(map[uuid.UUID][]models.ExpenseSplit)
+	for splitRows.Next() {
+		var s models.ExpenseSplit
+		err = splitRows.Scan(&s.ExpenseID, &s.UserID, &s.Amount)
+		if err != nil {
+			continue
+		}
+		splitsByExpense[s.ExpenseID] = append(splitsByExpense[s.ExpenseID], s)
+	}
+
+	for i := range expenses {
+		if s, ok := splitsByExpense[expenses[i].ID]; ok {
+			expenses[i].Splits = s
+		}
+	}
+
 	return expenses, nil
 }
 

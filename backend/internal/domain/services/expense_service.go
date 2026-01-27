@@ -6,24 +6,24 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nataalka/splitni-to/backend/internal/domain"
-	models2 "github.com/nataalka/splitni-to/backend/internal/domain/models"
-	repositories2 "github.com/nataalka/splitni-to/backend/internal/domain/repositories"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/domain/repositories"
 	"github.com/shopspring/decimal"
 )
 
 type ExpenseService struct {
-	repo     repositories2.ExpenseRepository
-	userRepo repositories2.UserRepository
+	repo     repositories.ExpenseRepository
+	userRepo repositories.UserRepository
 }
 
-func NewExpenseService(e repositories2.ExpenseRepository, u repositories2.UserRepository) *ExpenseService {
+func NewExpenseService(e repositories.ExpenseRepository, u repositories.UserRepository) *ExpenseService {
 	return &ExpenseService{
 		repo:     e,
 		userRepo: u,
 	}
 }
 
-func (s *ExpenseService) CreateExpense(ctx context.Context, e *models2.Expense) error {
+func (s *ExpenseService) CreateExpense(ctx context.Context, e *models.Expense) error {
 	if e.Amount.LessThanOrEqual(decimal.Zero) {
 		return domain.ErrInvalidAmount
 	}
@@ -51,7 +51,7 @@ func (s *ExpenseService) CreateExpense(ctx context.Context, e *models2.Expense) 
 	return s.repo.CreateWithSplits(ctx, e)
 }
 
-func (s *ExpenseService) GetGroupExpenses(ctx context.Context, groupID uuid.UUID) ([]models2.Expense, error) {
+func (s *ExpenseService) GetGroupExpenses(ctx context.Context, groupID uuid.UUID) ([]models.Expense, error) {
 	expenses, err := s.repo.GetByGroup(ctx, groupID)
 	if err != nil {
 		return nil, domain.NewInternalError("failed to fetch expenses", err)
@@ -59,7 +59,7 @@ func (s *ExpenseService) GetGroupExpenses(ctx context.Context, groupID uuid.UUID
 	return expenses, nil
 }
 
-func (s *ExpenseService) GetExpenseDetails(ctx context.Context, id uuid.UUID) (*models2.Expense, error) {
+func (s *ExpenseService) GetExpenseDetails(ctx context.Context, id uuid.UUID) (*models.Expense, error) {
 	expense, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, domain.ErrExpenseNotFound
@@ -67,7 +67,7 @@ func (s *ExpenseService) GetExpenseDetails(ctx context.Context, id uuid.UUID) (*
 	return expense, nil
 }
 
-func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID) ([]models2.MemberBalance, error) {
+func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID) ([]models.MemberBalance, error) {
 
 	rawBalances, err := s.repo.GetBalancesData(ctx, groupID)
 	if err != nil {
@@ -84,9 +84,9 @@ func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID
 		return nil, domain.NewInternalError("failed to fetch user details", err)
 	}
 
-	var result []models2.MemberBalance
+	var result []models.MemberBalance
 
-	userMap := make(map[uuid.UUID]models2.User)
+	userMap := make(map[uuid.UUID]models.User)
 	for _, u := range users {
 		userMap[u.ID] = u
 	}
@@ -97,7 +97,7 @@ func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID
 			continue
 		}
 
-		result = append(result, models2.MemberBalance{
+		result = append(result, models.MemberBalance{
 			User:    user,
 			Balance: bal,
 		})

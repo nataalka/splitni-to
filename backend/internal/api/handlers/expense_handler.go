@@ -56,7 +56,7 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 // ListByGroup godoc
 // @Summary      List group expenses
-// @Description  Returns a list of all expenses in a group (without individual splits)
+// @Description  Returns a list of all expenses in a group (with individual splits)
 // @Tags         expenses
 // @Produce      json
 // @Param        group_id path string true "Group ID"
