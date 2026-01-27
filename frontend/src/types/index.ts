@@ -29,6 +29,22 @@ export interface Expense {
   splits?: ExpenseSplit[];
 }
 
+export interface ExpenseSplitDetailed {
+  user: User;
+  amount: string;
+  }
+
+export interface ExpenseDetailed {
+  id: string;
+  group: Group;
+  payer: User;
+  amount: string;
+  currency: string;
+  description: string;
+  created_at: string;
+  splits: ExpenseSplitDetailed[];
+}
+
 export interface CreateExpenseSplitRequest {
   user_id: string;
   amount: string;

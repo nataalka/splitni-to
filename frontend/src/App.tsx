@@ -6,6 +6,7 @@ import GroupsPage from "@/pages/GroupsPage";
 import GroupDetailPage from "@/pages/GroupDetail";
 import FriendsPage from "@/pages/FriendsPage.tsx";
 import MainLayout from "@/pages/MainLayout.tsx";
+import ExpenseDetailPage from "@/pages/ExpenseDetailPage.tsx";
 
 export function App() {
   return (<BrowserRouter>
@@ -23,6 +24,8 @@ export function App() {
 
           <Route path="/groups" element={<GroupsPage/>}/>
           <Route path="/groups/:id" element={<GroupDetailPage/>}/>
+
+          <Route path="/groups/:group_id/expenses/:expense_id" element={<ExpenseDetailPage/>}/>
         </Route>
       </Routes>
       <Toaster/>
