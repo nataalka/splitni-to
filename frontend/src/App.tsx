@@ -3,7 +3,7 @@ import LoginPage from "@/pages/LoginPage"
 import { Toaster } from "@/components/ui/sonner";
 import RegisterPage from "@/pages/RegisterPage";
 import GroupsPage from "@/pages/GroupsPage";
-import GroupDetailPage from "@/pages/GroupDetail";
+import GroupDetailPage from "@/pages/GroupDetailPage.tsx";
 import FriendsPage from "@/pages/FriendsPage.tsx";
 import MainLayout from "@/pages/MainLayout.tsx";
 import ExpenseDetailPage from "@/pages/ExpenseDetailPage.tsx";

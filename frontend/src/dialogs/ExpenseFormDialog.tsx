@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
-import type { CreateExpenseRequest, User } from "@/types"
+import type { CreateExpenseRequest, ExpenseDetailed, User } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { Switch } from "@/components/ui/switch.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
@@ -34,33 +34,84 @@ const expenseSchema = z.object({
 
 type ExpenseValues = z.infer<typeof expenseSchema>
 
-interface AddExpenseDialogProps {
+interface ExpenseFormDialogProps {
   groupId: string;
   members: User[];
+  expense?: ExpenseDetailed;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
-  const [open, setOpen] = React.useState(false)
+export function ExpenseFormDialog({
+   groupId,
+   members,
+   expense,
+   open: externalOpen,
+   onOpenChange: setExternalOpen
+ }: ExpenseFormDialogProps) {
+  const isEdit = !!expense;
+  const isOpen = externalOpen ?? false;
+  const setIsOpen = setExternalOpen ?? (() => {});
+
   const [isManual, setIsManual] = React.useState(false)
   const [manualAmounts, setManualAmounts] = React.useState<Record<string, string>>({})
   const queryClient = useQueryClient()
 
   const form = useForm<ExpenseValues>({
     resolver: zodResolver(expenseSchema), defaultValues: {
-      description: "", amount: "", payer_id: members[0]?.id || "", selectedMembers: members.map(m => m.id),
+      description: "",
+      amount: "",
+      payer_id: "",
+      selectedMembers: [],
     },
   })
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (isEdit && expense) {
+        const selectedIds = expense.splits.map(s => s.user.id);
+
+        form.reset({
+          description: expense.description,
+          amount: expense.amount.toString(),
+          payer_id: expense.payer.id,
+          selectedMembers: selectedIds
+        })
+
+        const initialManual: Record<string, string> = {}
+        expense.splits.forEach(s => {
+          initialManual[s.user.id] = s.amount.toString()
+        })
+        setManualAmounts(initialManual)
+        setIsManual(true)
+      } else {
+        form.reset({
+          description: "",
+          amount: "",
+          payer_id: members?.[0]?.id || "",
+          selectedMembers: members?.map(m => m.id) || [],
+        })
+        setIsManual(false)
+        setManualAmounts({})
+      }
+    }
+  }, [isOpen, isEdit, expense, members, form])
 
   const watchedAmount = form.watch("amount")
   const watchedMembers = form.watch("selectedMembers")
 
   const mutation = useMutation({
-    mutationFn: (data: CreateExpenseRequest) => api.post(`/groups/${groupId}/expenses`, data), onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["group", groupId, "expenses"]})
-      queryClient.invalidateQueries({queryKey: ["group", groupId, "balances"]})
-      toast.success("Expense added!")
-      setOpen(false)
-      form.reset()
+    mutationFn: (data: CreateExpenseRequest) =>
+      isEdit
+        ? api.put(`/groups/${groupId}/expenses/${expense.id}`, data)
+        : api.post(`/groups/${groupId}/expenses`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["group", groupId]})
+      if (isEdit) queryClient.invalidateQueries({queryKey: ["expense", groupId, expense.id]})
+
+      toast.success(isEdit ? "Expense updated!" : "Expense added!")
+      setIsOpen(false)
+      if (!isEdit) form.reset()
     },
   })
 
@@ -119,12 +170,14 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="pinkPrimary">
-          <Plus className="h-4 w-4"/> Add Expense
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {!isEdit && !externalOpen && (
+        <DialogTrigger asChild>
+          <Button variant="pinkPrimary">
+            <Plus className="h-4 w-4"/> Add Expense
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[450px] rounded-3xl overflow-hidden">
         <DialogHeader className="flex-row justify-start gap-2">
           <div
@@ -132,8 +185,8 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
             <Receipt className="h-6 w-6"/>
           </div>
           <div className="flex-col">
-            <DialogTitle className="text-2xl font-black">Add Expense</DialogTitle>
-            <DialogDescription>Split a new bill with your group.</DialogDescription>
+            <DialogTitle className="text-2xl font-black">{isEdit ? "Edit Expense" : "Add Expense"}</DialogTitle>
+            <DialogDescription>{isEdit ? "Modify expense details below." : "Split a new bill with your group."}</DialogDescription>
           </div>
         </DialogHeader>
 
@@ -177,12 +230,12 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
               render={({field}) => (
                 <Field>
                   <FieldLabel>Paid by</FieldLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select who paid"/>
                     </SelectTrigger>
                     <SelectContent>
-                      {members.map((member) => (
+                      {members && members.map((member) => (
                         <SelectItem
                           key={member.id}
                           value={member.id}
@@ -258,17 +311,20 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
                     <Controller
                       name="selectedMembers"
                       control={form.control}
-                      render={({field}) => (
-                        <Checkbox
-                          checked={field.value.includes(user.id)}
-                          onCheckedChange={(checked) => {
-                            const newValue = checked
-                              ? [...field.value, user.id]
-                              : field.value.filter(id => id !== user.id);
-                            field.onChange(newValue);
-                          }}
-                        />
-                      )}
+                      render={({field}) => {
+                        const currentValues = Array.isArray(field.value) ? field.value : [];
+                        return (
+                          <Checkbox
+                            checked={currentValues.includes(user.id)}
+                            onCheckedChange={(checked) => {
+                              const newValue = checked
+                                ? [...currentValues, user.id]
+                                : currentValues.filter(id => id !== user.id);
+                              field.onChange(newValue);
+                            }}
+                          />
+                        )
+                      }}
                     />
                   )}
                 />

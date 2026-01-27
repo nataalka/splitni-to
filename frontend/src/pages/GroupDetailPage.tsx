@@ -6,7 +6,7 @@ import { Wallet, PieChart } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
 import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";
-import { AddExpenseDialog } from "@/dialogs/AddExpenseDialog.tsx";
+import { ExpenseFormDialog } from "@/dialogs/ExpenseFormDialog.tsx";
 import { useAuth } from "@/hooks/useAuth.ts";
 import { StatsCard } from "@/components/StatsCard.tsx";
 import { GroupActions } from "@/actions/GroupActions.tsx";
@@ -91,7 +91,7 @@ export default function GroupDetailPage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Expenses</h2>
-          {members && <AddExpenseDialog groupId={id!} members={members} />}
+          {members && <ExpenseFormDialog groupId={id!} members={members} />}
         </div>
         <ExpenseListCard expenses={expenses} members={members}/>
       </section>
