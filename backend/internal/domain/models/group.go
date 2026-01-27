@@ -7,10 +7,11 @@ import (
 )
 
 type Group struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	Members   []User    `json:"members,omitempty" db:"-"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	Name        string    `json:"name" db:"name"`
+	Description string    `json:"description" db:"description"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+	Members     []User    `json:"members,omitempty" db:"-"`
 }
 
 type GroupBalance struct {
@@ -20,7 +21,8 @@ type GroupBalance struct {
 }
 
 type CreateGroupRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type AddMemberRequest struct {

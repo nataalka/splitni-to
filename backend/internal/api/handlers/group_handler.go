@@ -43,7 +43,7 @@ func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	group, err := h.groupService.CreateGroup(ctx, req.Name, userID)
+	group, err := h.groupService.CreateGroup(ctx, req, userID)
 	if err != nil {
 		respondWithError(w, err)
 		return

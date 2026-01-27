@@ -21,9 +21,10 @@ CREATE TABLE IF NOT EXISTS friendships
 
 CREATE TABLE IF NOT EXISTS groups
 (
-    id         UUID         NOT NULL    DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name       VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id          UUID         NOT NULL    DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT         NOT NULL,
+    created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS group_members
