@@ -23,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import type { CreateExpenseRequest, User } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { Switch } from "@/components/ui/switch.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 
 const expenseSchema = z.object({
   description: z.string().min(3, "Description is too short."),
@@ -139,6 +140,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <div className="grid grid-cols-3 gap-4">
+              {/* Description */}
               <div className="col-span-2">
                 <Controller
                   name="description"
@@ -150,6 +152,8 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
                   </Field>)}
                 />
               </div>
+
+              {/* Amount */}
               <div className="col-span-1">
                 <Controller
                   name="amount"
@@ -166,12 +170,46 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
               </div>
             </div>
 
-            <div >
+            {/* Payer Selection */}
+            <Controller
+              name="payer_id"
+              control={form.control}
+              render={({field}) => (
+                <Field>
+                  <FieldLabel>Paid by</FieldLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select who paid"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {members.map((member) => (
+                        <SelectItem
+                          key={member.id}
+                          value={member.id}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="h-5 w-5 rounded-full bg-pink-100 !text-pink-600 flex items-center justify-center text-[8px] font-bold">
+                              {member.name[0]}{member.surname[0]}
+                            </div>
+                            <span className="text-sm">{member.name} {member.surname}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              )}
+            />
+
+            {/* Share Distribution */}
+            <div>
               <div className="flex justify-between items-center">
                 <FieldLabel>Share Distribution</FieldLabel>
 
                 <div className="flex items-center gap-2 bg-zinc-50 px-3 py-2 rounded-2xl border border-zinc-100">
-                  <span className={`text-[10px] font-bold transition-colors ${!isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                  <span
+                    className={`text-[10px] font-bold transition-colors ${!isManual ? "text-pink-600" : "text-zinc-400"}`}>
                     AUTO
                   </span>
                   <Switch
@@ -179,7 +217,8 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
                     onCheckedChange={toggleMode}
                     className="data-[state=checked]:bg-pink-600"
                   />
-                  <span className={`text-[10px] font-bold transition-colors ${isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                  <span
+                    className={`text-[10px] font-bold transition-colors ${isManual ? "text-pink-600" : "text-zinc-400"}`}>
                     MANUAL
                   </span>
                 </div>
