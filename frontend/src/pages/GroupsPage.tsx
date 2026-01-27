@@ -3,11 +3,12 @@ import api from "@/lib/api"
 import type { Group } from "@/types"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Users } from "lucide-react"
+import { Users } from "lucide-react"
 import { CreateGroupDialog } from "@/dialogs/CreateGroupDialog.tsx";
+import { Link } from "react-router-dom";
 
 export default function GroupsPage() {
-  const { data: groups, isLoading, error } = useQuery<Group[]>({
+  const {data: groups, isLoading, error} = useQuery<Group[]>({
     queryKey: ["groups"],
     queryFn: async () => {
       const response = await api.get("/groups")
@@ -30,22 +31,24 @@ export default function GroupsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {groups?.map((group) => (
-          <Card
-            key={group.id}
-            className="hover:border-pink-500 transition-all cursor-pointer shadow-sm"
-          >
-            <CardHeader className="flex items-center gap-4">
-              <div className="p-2 bg-pink-100 rounded-lg">
-                <Users className="h-6 w-6 text-pink-600" />
-              </div>
-              <div>
-                <CardTitle>{group.name}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {group.description || "No description provided."}
-                </CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
+          <Link   key={group.id} to={`/groups/${group.id}`}>
+            <Card
+              key={group.id}
+              className="hover:border-pink-500 transition-all cursor-pointer shadow-sm"
+            >
+              <CardHeader className="flex items-center gap-4">
+                <div className="p-2 bg-pink-100 rounded-lg">
+                  <Users className="h-6 w-6 text-pink-600"/>
+                </div>
+                <div>
+                  <CardTitle>{group.name}</CardTitle>
+                  <CardDescription className="line-clamp-2">
+                    {group.description || "No description provided."}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
 
         {groups?.length === 0 && (
