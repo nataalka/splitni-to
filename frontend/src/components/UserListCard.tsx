@@ -8,9 +8,15 @@ interface UserListCardProps {
   users: User[] | undefined;
   emptyMessage?: string;
   renderActions?: (user: User) => React.ReactNode;
-  renderSubtext?: (user: User) => React.ReactNode;}
+  renderSubtext?: (user: User) => React.ReactNode;
+}
 
-export function UserListCard({ users, emptyMessage = "No people found.", renderActions, renderSubtext }: UserListCardProps) {
+export function UserListCard({
+   users,
+   emptyMessage = "No people found.",
+   renderActions,
+   renderSubtext
+ }: UserListCardProps) {
   return (
     <Card className="overflow-hidden p-2">
       {users && users.length > 0 ? (

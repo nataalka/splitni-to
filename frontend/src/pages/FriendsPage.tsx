@@ -3,7 +3,6 @@ import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Check, X } from "lucide-react"
 import * as React from "react"
-import { useState } from "react"
 import { toast } from "sonner"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { AddFriendDialog } from "@/dialogs/AddFriendDialog.tsx";
@@ -41,7 +40,7 @@ export default function FriendsPage() {
           <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
             Friends
           </h1>
-          <AddFriendDialog />
+          <AddFriendDialog/>
         </div>
         <p className="text-zinc-500 text-sm">Add people to split expenses with them later.</p>
       </div>
@@ -55,7 +54,7 @@ export default function FriendsPage() {
           emptyMessage={"No friends yet."}
           renderActions={(user) => (
             <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
-                             onClick={() => rejectMutation.mutate(user.id)}>
+                    onClick={() => rejectMutation.mutate(user.id)}>
               <X className="h-5 w-5"/>
             </Button>
           )}

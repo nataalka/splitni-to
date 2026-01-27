@@ -8,13 +8,15 @@ interface UserListItemProps {
   className?: string;
 }
 
-export function UserListItem({ user, actions, subtext, className = "" }: UserListItemProps) {
+export function UserListItem({user, actions, subtext, className = ""}: UserListItemProps) {
   const initials = `${user.name?.[0] || ""}${user.surname?.[0] || ""}`.toUpperCase();
 
   return (
-    <div className={`flex items-center justify-between p-2 rounded-xl hover:bg-zinc-50 transition-colors group ${className}`}>
+    <div
+      className={`flex items-center justify-between p-2 rounded-xl hover:bg-zinc-50 transition-colors group ${className}`}>
       <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs shrink-0">
+        <div
+          className="h-9 w-9 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs shrink-0">
           {initials}
         </div>
 

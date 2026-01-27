@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group, User, Expense, MemberBalance } from "@/types"
 import { Card } from "@/components/ui/card"
-import { ArrowUpDown, Plus, Wallet, PieChart } from "lucide-react"
+import { ArrowUpDown, Wallet, PieChart } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
 import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";

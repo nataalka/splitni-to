@@ -9,7 +9,13 @@ import { Plus, Receipt } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -89,6 +95,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
     }
     mutation.mutate(payload)
   }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -162,7 +169,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
                     <Controller
                       name="selectedMembers"
                       control={form.control}
-                      render={({ field }) => (
+                      render={({field}) => (
                         <Checkbox
                           checked={field.value.includes(user.id)}
                           onCheckedChange={(checked) => {

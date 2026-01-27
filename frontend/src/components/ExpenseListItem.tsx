@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { Receipt, Calendar } from "lucide-react"
 import type { Expense } from "@/types"
 
 interface ExpenseListItemProps {
@@ -10,7 +9,6 @@ export function ExpenseListItem({ expense }: ExpenseListItemProps) {
   return (
     <div className="group flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors cursor-pointer">
       <div className="flex items-center gap-4">
-        {/* Ikona účtenky */}
         <div className="h-12 w-12 rounded-2xl bg-zinc-50 flex flex-col items-center justify-center text-zinc-400 border border-zinc-100 group-hover:bg-white group-hover:text-pink-600 transition-all">
           <span className="text-[10px] font-bold uppercase leading-none">
             {format(new Date(expense.created_at), "MMM")}
