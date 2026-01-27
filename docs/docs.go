@@ -108,7 +108,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/friends/{id}": {
+        "/friends/{friend_id}": {
             "delete": {
                 "security": [
                     {
@@ -124,7 +124,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Friend User ID",
-                        "name": "id",
+                        "name": "friend_id",
                         "in": "path",
                         "required": true
                     }
@@ -136,7 +136,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/friends/{id}/accept": {
+        "/friends/{requester_id}/accept": {
             "put": {
                 "security": [
                     {
@@ -152,7 +152,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Requester User ID",
-                        "name": "id",
+                        "name": "requester_id",
                         "in": "path",
                         "required": true
                     }
@@ -229,7 +229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/groups/{id}": {
+        "/groups/{group_id}": {
             "get": {
                 "security": [
                     {
@@ -269,7 +269,137 @@ const docTemplate = `{
                 }
             }
         },
-        "/groups/{id}/members": {
+        "/groups/{group_id}/balances": {
+            "get": {
+                "description": "Calculates the current balance for each user in the group (who owes whom)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "Get group balances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.MemberBalance"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/groups/{group_id}/expenses": {
+            "get": {
+                "description": "Returns a list of all expenses in a group (without individual splits)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "List group expenses",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Expense"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_handlers.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new expense to a group. Sum of splits must equal the total amount.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "Create a new expense",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Expense object",
+                        "name": "expense",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Expense"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_handlers.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_api_handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/groups/{group_id}/members": {
             "get": {
                 "security": [
                     {
@@ -323,7 +453,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Group ID",
-                        "name": "id",
+                        "name": "group_id",
                         "in": "path",
                         "required": true
                     },
@@ -356,7 +486,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/groups/{id}/members/{userID}": {
+        "/groups/{group_id}/members/{user_id}": {
             "delete": {
                 "security": [
                     {
@@ -372,14 +502,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Group ID",
-                        "name": "id",
+                        "name": "group_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "User ID to remove",
-                        "name": "userID",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     }
@@ -417,7 +547,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.LoginRequest"
                         }
                     }
                 ],
@@ -477,7 +607,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{user_id}": {
             "get": {
                 "security": [
                     {
@@ -496,7 +626,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "User UUID",
-                        "name": "id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     }
@@ -560,6 +690,40 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "payer_id": {
+                    "type": "string"
+                },
+                "splits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseSplitRequest"
+                    }
+                }
+            }
+        },
+        "github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseSplitRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_nataalka_splitni-to_internal_domain_models.CreateGroupRequest": {
             "type": "object",
             "properties": {
@@ -581,6 +745,52 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_nataalka_splitni-to_internal_domain_models.Expense": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "group_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payer_id": {
+                    "type": "string"
+                },
+                "splits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.ExpenseSplit"
+                    }
+                }
+            }
+        },
+        "github_com_nataalka_splitni-to_internal_domain_models.ExpenseSplit": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "expense_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -613,11 +823,33 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_nataalka_splitni-to_internal_domain_models.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_nataalka_splitni-to_internal_domain_models.LoginResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User"
+                }
+            }
+        },
+        "github_com_nataalka_splitni-to_internal_domain_models.MemberBalance": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number"
                 },
                 "user": {
                     "$ref": "#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User"
@@ -640,6 +872,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "surname": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_api_handlers.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {
                     "type": "string"
                 }
             }

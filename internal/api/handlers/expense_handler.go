@@ -23,14 +23,14 @@ func NewExpenseHandler(s *services.ExpenseService) *ExpenseHandler {
 // @Tags         expenses
 // @Accept       json
 // @Produce      json
-// @Param        groupID path string true "Group ID"
+// @Param        group_id path string true "Group ID"
 // @Param        expense body models.CreateExpenseRequest true "Expense object"
 // @Success      201 {object} models.Expense
 // @Failure      400 {object} ErrorResponse
 // @Failure      500 {object} ErrorResponse
-// @Router       /groups/{groupID}/expenses [post]
+// @Router       /groups/{group_id}/expenses [post]
 func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
-	groupID, err := parseUUID(r, "groupID")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -59,12 +59,12 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Description  Returns a list of all expenses in a group (without individual splits)
 // @Tags         expenses
 // @Produce      json
-// @Param        groupID path string true "Group ID"
+// @Param        group_id path string true "Group ID"
 // @Success      200 {array} models.Expense
 // @Failure      400 {object} ErrorResponse
-// @Router       /groups/{groupID}/expenses [get]
+// @Router       /groups/{group_id}/expenses [get]
 func (h *ExpenseHandler) ListByGroup(w http.ResponseWriter, r *http.Request) {
-	groupID, err := parseUUID(r, "groupID")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -84,13 +84,13 @@ func (h *ExpenseHandler) ListByGroup(w http.ResponseWriter, r *http.Request) {
 // @Description  Calculates the current balance for each user in the group (who owes whom)
 // @Tags         expenses
 // @Produce      json
-// @Param        groupID path string true "Group ID"
+// @Param        group_id path string true "Group ID"
 // @Success      200 {object} models.MemberBalance
 // @Failure      400 {object} ErrorResponse
 // @Failure      500 {object} ErrorResponse
-// @Router       /groups/{groupID}/balances [get]
+// @Router       /groups/{group_id}/balances [get]
 func (h *ExpenseHandler) GetGroupBalances(w http.ResponseWriter, r *http.Request) {
-	groupID, err := parseUUID(r, "groupID")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return

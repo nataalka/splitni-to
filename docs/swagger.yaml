@@ -31,6 +31,28 @@ definitions:
       user_id:
         type: string
     type: object
+  github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseRequest:
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+      description:
+        type: string
+      payer_id:
+        type: string
+      splits:
+        items:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseSplitRequest'
+        type: array
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseSplitRequest:
+    properties:
+      amount:
+        type: number
+      user_id:
+        type: string
+    type: object
   github_com_nataalka_splitni-to_internal_domain_models.CreateGroupRequest:
     properties:
       name:
@@ -45,6 +67,36 @@ definitions:
       password:
         type: string
       surname:
+        type: string
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.Expense:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      group_id:
+        type: string
+      id:
+        type: string
+      payer_id:
+        type: string
+      splits:
+        items:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.ExpenseSplit'
+        type: array
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.ExpenseSplit:
+    properties:
+      amount:
+        type: number
+      expense_id:
+        type: string
+      user_id:
         type: string
     type: object
   github_com_nataalka_splitni-to_internal_domain_models.FriendRequest:
@@ -65,10 +117,24 @@ definitions:
       name:
         type: string
     type: object
+  github_com_nataalka_splitni-to_internal_domain_models.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   github_com_nataalka_splitni-to_internal_domain_models.LoginResponse:
     properties:
       access_token:
         type: string
+      user:
+        $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
+    type: object
+  github_com_nataalka_splitni-to_internal_domain_models.MemberBalance:
+    properties:
+      balance:
+        type: number
       user:
         $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.User'
     type: object
@@ -83,6 +149,13 @@ definitions:
       name:
         type: string
       surname:
+        type: string
+    type: object
+  internal_api_handlers.ErrorResponse:
+    properties:
+      code:
+        type: string
+      error:
         type: string
     type: object
 host: localhost:8080
@@ -132,13 +205,13 @@ paths:
       summary: Send friend request
       tags:
       - friends
-  /friends/{id}:
+  /friends/{friend_id}:
     delete:
       description: Remove a user from friends list or decline a request
       parameters:
       - description: Friend User ID
         in: path
-        name: id
+        name: friend_id
         required: true
         type: string
       responses:
@@ -149,13 +222,13 @@ paths:
       summary: Remove friend
       tags:
       - friends
-  /friends/{id}/accept:
+  /friends/{requester_id}/accept:
     put:
       description: Accept a pending friend request from another user
       parameters:
       - description: Requester User ID
         in: path
-        name: id
+        name: requester_id
         required: true
         type: string
       responses:
@@ -223,7 +296,7 @@ paths:
       summary: Create a new group
       tags:
       - groups
-  /groups/{id}:
+  /groups/{group_id}:
     get:
       description: Fetch details of a specific group if the user is a member
       parameters:
@@ -248,7 +321,95 @@ paths:
       summary: Get group details
       tags:
       - groups
-  /groups/{id}/members:
+  /groups/{group_id}/balances:
+    get:
+      description: Calculates the current balance for each user in the group (who
+        owes whom)
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.MemberBalance'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ErrorResponse'
+      summary: Get group balances
+      tags:
+      - expenses
+  /groups/{group_id}/expenses:
+    get:
+      description: Returns a list of all expenses in a group (without individual splits)
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Expense'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ErrorResponse'
+      summary: List group expenses
+      tags:
+      - expenses
+    post:
+      consumes:
+      - application/json
+      description: Adds a new expense to a group. Sum of splits must equal the total
+        amount.
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Expense object
+        in: body
+        name: expense
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateExpenseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ErrorResponse'
+      summary: Create a new expense
+      tags:
+      - expenses
+  /groups/{group_id}/members:
     get:
       description: Get a list of all users in a specific group
       parameters:
@@ -278,7 +439,7 @@ paths:
       parameters:
       - description: Group ID
         in: path
-        name: id
+        name: group_id
         required: true
         type: string
       - description: User ID to add
@@ -303,19 +464,19 @@ paths:
       summary: Add a member to a group
       tags:
       - groups
-  /groups/{id}/members/{userID}:
+  /groups/{group_id}/members/{user_id}:
     delete:
       description: Remove a user from the group. Can be used for leaving or kicking
         members.
       parameters:
       - description: Group ID
         in: path
-        name: id
+        name: group_id
         required: true
         type: string
       - description: User ID to remove
         in: path
-        name: userID
+        name: user_id
         required: true
         type: string
       responses:
@@ -341,7 +502,7 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.CreateUserRequest'
+          $ref: '#/definitions/github_com_nataalka_splitni-to_internal_domain_models.LoginRequest'
       produces:
       - application/json
       responses:
@@ -382,13 +543,13 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /users/{id}:
+  /users/{user_id}:
     get:
       description: Fetch user information by their unique ID
       parameters:
       - description: User UUID
         in: path
-        name: id
+        name: user_id
         required: true
         type: string
       produces:

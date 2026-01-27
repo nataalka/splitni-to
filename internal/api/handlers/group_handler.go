@@ -58,12 +58,12 @@ func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Tags         groups
 // @Security     BearerAuth
 // @Accept       json
-// @Param        id path string true "Group ID"
+// @Param        group_id path string true "Group ID"
 // @Param        request body models.AddMemberRequest true "User ID to add"
 // @Success      204 "No Content"
 // @Failure      403 {object} domain.AppError "Permission denied"
 // @Failure      404 {object} domain.AppError "Group not found"
-// @Router       /groups/{id}/members [post]
+// @Router       /groups/{group_id}/members [post]
 func (h *GroupHandler) AddMember(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := getUserIDFromContext(ctx)
@@ -72,7 +72,7 @@ func (h *GroupHandler) AddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupID, err := parseUUID(r, "id")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -99,11 +99,11 @@ func (h *GroupHandler) AddMember(w http.ResponseWriter, r *http.Request) {
 // @Description  Remove a user from the group. Can be used for leaving or kicking members.
 // @Tags         groups
 // @Security     BearerAuth
-// @Param        id path string true "Group ID"
-// @Param        userID path string true "User ID to remove"
+// @Param        group_id path string true "Group ID"
+// @Param        user_id path string true "User ID to remove"
 // @Success      204 "No Content"
 // @Failure      403 {object} domain.AppError
-// @Router       /groups/{id}/members/{userID} [delete]
+// @Router       /groups/{group_id}/members/{user_id} [delete]
 func (h *GroupHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := getUserIDFromContext(ctx)
@@ -112,13 +112,13 @@ func (h *GroupHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupID, err := parseUUID(r, "id")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
 	}
 
-	targetID, err := parseUUID(r, "userID")
+	targetID, err := parseUUID(r, "user_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -142,7 +142,7 @@ func (h *GroupHandler) RemoveMember(w http.ResponseWriter, r *http.Request) {
 // @Param        id path string true "Group ID"
 // @Success      200 {object} models.Group
 // @Failure      403 {object} domain.AppError
-// @Router       /groups/{id} [get]
+// @Router       /groups/{group_id} [get]
 func (h *GroupHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := getUserIDFromContext(ctx)
@@ -151,7 +151,7 @@ func (h *GroupHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupID, err := parseUUID(r, "id")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -199,7 +199,7 @@ func (h *GroupHandler) ListUsersGroups(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path string true "Group ID"
 // @Success      200 {array} models.User
-// @Router       /groups/{id}/members [get]
+// @Router       /groups/{group_id}/members [get]
 func (h *GroupHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, err := getUserIDFromContext(ctx)
@@ -208,7 +208,7 @@ func (h *GroupHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	groupID, err := parseUUID(r, "id")
+	groupID, err := parseUUID(r, "group_id")
 	if err != nil {
 		respondWithError(w, err)
 		return

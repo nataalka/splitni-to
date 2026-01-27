@@ -90,14 +90,14 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Security     BearerAuth
 // @Produce      json
-// @Param        id path string true "User UUID"
+// @Param        user_id path string true "User UUID"
 // @Success      200 {object} models.User
 // @Failure      404 {object} domain.AppError
-// @Router       /users/{id} [get]
+// @Router       /users/{user_id} [get]
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	id, err := parseUUID(r, "id")
+	id, err := parseUUID(r, "user_id")
 	if err != nil {
 		respondWithError(w, err)
 		return

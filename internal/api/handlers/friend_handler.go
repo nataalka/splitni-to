@@ -57,9 +57,9 @@ func (h *FriendHandler) AddFriend(w http.ResponseWriter, r *http.Request) {
 // @Description  Accept a pending friend request from another user
 // @Tags         friends
 // @Security     BearerAuth
-// @Param        id path string true "Requester User ID"
+// @Param        requester_id path string true "Requester User ID"
 // @Success      200 "OK"
-// @Router       /friends/{id}/accept [put]
+// @Router       /friends/{requester_id}/accept [put]
 func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -69,7 +69,7 @@ func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requesterID, err := parseUUID(r, "id")
+	requesterID, err := parseUUID(r, "requester_id")
 	if err != nil {
 		respondWithError(w, err)
 		return
@@ -89,9 +89,9 @@ func (h *FriendHandler) AcceptFriend(w http.ResponseWriter, r *http.Request) {
 // @Description  Remove a user from friends list or decline a request
 // @Tags         friends
 // @Security     BearerAuth
-// @Param        id path string true "Friend User ID"
+// @Param        friend_id path string true "Friend User ID"
 // @Success      204 "No Content"
-// @Router       /friends/{id} [delete]
+// @Router       /friends/{friend_id} [delete]
 func (h *FriendHandler) DeleteFriendship(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -101,7 +101,7 @@ func (h *FriendHandler) DeleteFriendship(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	friendID, err := parseUUID(r, "id")
+	friendID, err := parseUUID(r, "friend_id")
 	if err != nil {
 		respondWithError(w, err)
 	}

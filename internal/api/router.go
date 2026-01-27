@@ -49,7 +49,7 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 
 func userRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/{id}", cfg.UserHandler.GetByID)
+	r.Get("/{user_id}", cfg.UserHandler.GetByID)
 	return r
 }
 
@@ -57,7 +57,7 @@ func groupRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Post("/", cfg.GroupHandler.Create)
 	r.Get("/", cfg.GroupHandler.ListUsersGroups)
-	r.Route("/{id}", func(r chi.Router) {
+	r.Route("/{group_id}", func(r chi.Router) {
 		r.Get("/", cfg.GroupHandler.GetByID)
 
 		r.Route("/expenses", func(r chi.Router) {
@@ -70,7 +70,7 @@ func groupRoutes(cfg RouterConfig) *chi.Mux {
 		r.Route("/members", func(r chi.Router) {
 			r.Get("/", cfg.GroupHandler.ListMembers)
 			r.Post("/", cfg.GroupHandler.AddMember)
-			r.Delete("/{userID}", cfg.GroupHandler.RemoveMember)
+			r.Delete("/{user_id}", cfg.GroupHandler.RemoveMember)
 		})
 	})
 	return r
@@ -82,8 +82,8 @@ func friendRoutes(cfg RouterConfig) *chi.Mux {
 	r.Get("/", cfg.FriendHandler.ListFriends)
 	r.Get("/pending", cfg.FriendHandler.ListPendingRequests)
 	r.Post("/", cfg.FriendHandler.AddFriend)
-	r.Put("/{id}/accept", cfg.FriendHandler.AcceptFriend)
-	r.Delete("/{id}", cfg.FriendHandler.DeleteFriendship)
+	r.Put("/{requester_id}/accept", cfg.FriendHandler.AcceptFriend)
+	r.Delete("/{friend_id}", cfg.FriendHandler.DeleteFriendship)
 
 	return r
 }
