@@ -4,12 +4,13 @@ import api from "@/lib/api"
 import type { Group } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowUpDown, ChevronLeft, Plus, Users, Wallet } from "lucide-react"
+import { ArrowUpDown, ChevronLeft, Plus, Wallet } from "lucide-react"
+import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx";
 
 export default function GroupDetailPage() {
   const {id} = useParams<{ id: string }>()
 
-  const {data: group, isLoading, error} = useQuery<Group>({
+  const {data: group, isLoading: groupLoading, error} = useQuery<Group>({
     queryKey: ["group", id],
     queryFn: async () => {
       const response = await api.get(`/groups/${id}`)
@@ -17,7 +18,15 @@ export default function GroupDetailPage() {
     },
   })
 
-  if (isLoading) return <div className="p-10 text-center text-muted-foreground">Loading group details...</div>
+  const { data: members, isLoading: membersLoading } = useQuery<User[]>({
+    queryKey: ["group", id, "members"],
+    queryFn: () => api.get(`/groups/${id}/members`).then(res => res.data),
+    enabled: !!id,
+  })
+
+  if (groupLoading || membersLoading) {
+    return <div className="p-10 text-center text-muted-foreground">Loading group details...</div>
+  }
   if (error) return <div className="p-10 text-center text-destructive">Group not found.</div>
 
   return (
@@ -66,10 +75,26 @@ export default function GroupDetailPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Members</CardTitle>
-          <Users className="h-4 w-4"/>
+          <AddMemberDialog groupId={id}/>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Members list coming soon...</p>
+          <div className="space-y-4">
+            {members && members.length > 0 ? (
+              members.map((member) => (
+                <div key={member.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-zinc-50 transition-colors">
+                  <div className="h-8 w-8 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs">
+                    {member.name[0]}{member.surname[0]}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium leading-none">{member.name} {member.surname}</p>
+                    <p className="text-xs text-muted-foreground">{member.email}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">No members yet.</p>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
