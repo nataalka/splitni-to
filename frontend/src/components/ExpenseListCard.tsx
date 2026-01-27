@@ -21,7 +21,7 @@ export function ExpenseListCard({expenses, members }: ExpenseListCardProps) {
   }, [members]);
 
   return (
-    <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden bg-white">
+    <Card className="rounded-3xl p-2 border-zinc-100 shadow-sm overflow-hidden bg-white">
       {expenses && expenses.length > 0 ? (
         <div className="flex flex-col">
           {expenses.map((expense, index) => {
@@ -29,9 +29,9 @@ export function ExpenseListCard({expenses, members }: ExpenseListCardProps) {
             const payerDisplayName = isMe ? "You" : (membersMap[expense.payer_id] || "Unknown");
             return (
               <React.Fragment key={expense.id}>
-                <ExpenseListItem expense={expense} payerName={payerDisplayName} />
+                <ExpenseListItem expense={expense} payerName={payerDisplayName} currentUserId={userId} />
                 {index < expenses.length - 1 && (
-                  <Separator className="mx-4 bg-zinc-50 w-auto"/>
+                  <Separator/>
                 )}
               </React.Fragment>
             );
