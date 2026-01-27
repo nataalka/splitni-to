@@ -21,27 +21,26 @@ export function GroupActions({ group }: { group: Group }) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400 rounded-full">
+          <Button variant="outline">
             <MoreHorizontal className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 rounded-2xl p-2">
-          <DropdownMenuLabel className="text-xs font-bold text-zinc-400 uppercase tracking-widest px-2 py-1.5">
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuLabel className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
             Group Options
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
             onSelect={() => setShowEdit(true)}
-            className="rounded-xl gap-2 cursor-pointer py-2.5"
           >
-            <Settings2 className="h-4 w-4 text-zinc-500" />
+            <Settings2 className="h-4 w-4" />
             <span>Edit Group</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onSelect={() => setShowDelete(true)}
-            className="rounded-xl gap-2 cursor-pointer py-2.5 text-red-600 focus:text-red-600 focus:bg-red-50"
+            variant="destructive"
           >
             <Trash2 className="h-4 w-4" />
             <span>Delete Group</span>

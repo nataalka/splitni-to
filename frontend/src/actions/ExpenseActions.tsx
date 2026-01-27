@@ -31,7 +31,11 @@ export function ExpenseActions({ groupId, expense, members }: ExpenseActionsProp
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuLabel>Expense Options</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+            Expense Options
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
@@ -41,7 +45,7 @@ export function ExpenseActions({ groupId, expense, members }: ExpenseActionsProp
             <Settings2 className="h-4 w-4" />
             <span>Edit Expense</span>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
@@ -55,21 +59,25 @@ export function ExpenseActions({ groupId, expense, members }: ExpenseActionsProp
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DeleteExpenseDialog
-        groupId={groupId}
-        expenseId={expense.id}
-        open={showDelete}
-        onOpenChange={setShowDelete}
-      />
+      {showEdit && (
+        <ExpenseFormDialog
+          key={showEdit ? `edit-${expense.id}` : 'add'}
+          groupId={groupId}
+          members={members}
+          expense={expense}
+          open={showEdit}
+          onOpenChange={setShowEdit}
+        />
+      )}
 
-      <ExpenseFormDialog
-        key={showEdit ? `edit-${expense.id}` : 'add'}
-        groupId={groupId}
-        members={members}
-        expense={expense}
-        open={showEdit}
-        onOpenChange={setShowEdit}
-      />
+      {showDelete && (
+        <DeleteExpenseDialog
+          groupId={groupId}
+          expenseId={expense.id}
+          open={showDelete}
+          onOpenChange={setShowDelete}
+        />
+      )}
     </>
   )
 }
