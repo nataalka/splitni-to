@@ -71,9 +71,13 @@ func NewPermissionError(msg string) *AppError {
 }
 
 var (
-	ErrEmailTaken     = NewConflictError("email is already registered")
-	ErrUserNotFound   = NewNotFoundError("user not found")
-	ErrGroupNotFound  = NewNotFoundError("group not found")
-	ErrAlreadyInGroup = NewConflictError("member is already in group")
-	ErrNotInGroup     = NewPermissionError("member is not in group")
+	ErrEmailTaken      = NewConflictError("email is already registered")
+	ErrUserNotFound    = NewNotFoundError("user not found")
+	ErrGroupNotFound   = NewNotFoundError("group not found")
+	ErrAlreadyInGroup  = NewConflictError("member is already in group")
+	ErrNotInGroup      = NewPermissionError("member is not in group")
+	ErrInvalidAmount   = NewValidationError("expense amount must be greater than zero")
+	ErrInvalidSplits   = NewValidationError("sum of splits does not match the total amount")
+	ErrNoSplits        = NewValidationError("expense must have at least one split")
+	ErrExpenseNotFound = NewNotFoundError("expense not found")
 )

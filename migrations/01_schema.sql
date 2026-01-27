@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS expenses
     group_id    UUID REFERENCES groups (id) ON DELETE CASCADE,
     payer_id    UUID           REFERENCES users (id) ON DELETE SET NULL,
     amount      DECIMAL(12, 2) NOT NULL,
+    currency    VARCHAR(3)               DEFAULT 'EUR',
     description TEXT           NOT NULL,
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

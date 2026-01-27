@@ -10,9 +10,10 @@ import (
 )
 
 type RouterConfig struct {
-	UserHandler   *handlers.UserHandler
-	GroupHandler  *handlers.GroupHandler
-	FriendHandler *handlers.FriendHandler
+	UserHandler    *handlers.UserHandler
+	GroupHandler   *handlers.GroupHandler
+	FriendHandler  *handlers.FriendHandler
+	ExpenseHandler *handlers.ExpenseHandler
 }
 
 func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
@@ -58,6 +59,14 @@ func groupRoutes(cfg RouterConfig) *chi.Mux {
 	r.Get("/", cfg.GroupHandler.ListUsersGroups)
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", cfg.GroupHandler.GetByID)
+
+		r.Route("/expenses", func(r chi.Router) {
+			r.Post("/", cfg.ExpenseHandler.Create)
+			r.Get("/", cfg.ExpenseHandler.ListByGroup)
+		})
+
+		r.Get("/balances", cfg.ExpenseHandler.GetGroupBalances)
+
 		r.Route("/members", func(r chi.Router) {
 			r.Get("/", cfg.GroupHandler.ListMembers)
 			r.Post("/", cfg.GroupHandler.AddMember)

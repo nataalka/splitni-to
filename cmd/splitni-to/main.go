@@ -62,10 +62,15 @@ func runApp(cfg *config.Config) error {
 	friendService := services.NewFriendService(friendRepo, userRepo)
 	friendHandler := handlers.NewFriendHandler(friendService)
 
+	expenseRepo := postgres.NewExpenseRepository(db)
+	expenseService := services.NewExpenseService(expenseRepo, userRepo)
+	expenseHandler := handlers.NewExpenseHandler(expenseService)
+
 	routerConfig := api.RouterConfig{
-		UserHandler:   userHandler,
-		GroupHandler:  groupHandler,
-		FriendHandler: friendHandler,
+		UserHandler:    userHandler,
+		GroupHandler:   groupHandler,
+		FriendHandler:  friendHandler,
+		ExpenseHandler: expenseHandler,
 	}
 	router := api.NewRouter(routerConfig, jwtSecret)
 
