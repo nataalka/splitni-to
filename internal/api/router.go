@@ -3,10 +3,18 @@ package api
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
 	_ "github.com/nataalka/splitni-to/docs"
 	"github.com/nataalka/splitni-to/internal/api/handlers"
 	httpSwagger "github.com/swaggo/http-swagger"
+)
+
+var (
+	defaultAllowedMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	defaultAllowedHeaders = []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}
+	defaultExposedHeaders = []string{"Link"}
+	defaultMaxAgeSeconds  = 300
 )
 
 type RouterConfig struct {
@@ -14,12 +22,22 @@ type RouterConfig struct {
 	GroupHandler   *handlers.GroupHandler
 	FriendHandler  *handlers.FriendHandler
 	ExpenseHandler *handlers.ExpenseHandler
+	AllowedOrigins []string
 }
 
 func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 	tokenAuth := jwtauth.New("HS256", []byte(jwtSecret), nil)
 
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   cfg.AllowedOrigins,
+		AllowedMethods:   defaultAllowedMethods,
+		AllowedHeaders:   defaultAllowedHeaders,
+		ExposedHeaders:   defaultExposedHeaders,
+		AllowCredentials: true,
+		MaxAge:           defaultMaxAgeSeconds,
+	}))
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)

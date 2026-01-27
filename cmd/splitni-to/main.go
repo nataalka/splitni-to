@@ -71,6 +71,7 @@ func runApp(cfg *config.Config) error {
 		GroupHandler:   groupHandler,
 		FriendHandler:  friendHandler,
 		ExpenseHandler: expenseHandler,
+		AllowedOrigins: cfg.CORS.AllowedOrigins,
 	}
 	router := api.NewRouter(routerConfig, jwtSecret)
 

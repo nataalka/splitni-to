@@ -10,6 +10,7 @@ type Config struct {
 	Server  ServerConfig  `mapstructure:"server"`
 	Storage StorageConfig `mapstructure:"storage"`
 	Auth    AuthConfig    `mapstructure:"auth"`
+	CORS    CORSConfig    `mapstructure:"cors"`
 }
 
 type ServerConfig struct {
@@ -23,6 +24,10 @@ type StorageConfig struct {
 
 type AuthConfig struct {
 	JWTSecret string `mapstructure:"jwt_secret"`
+}
+
+type CORSConfig struct {
+	AllowedOrigins []string `mapstructure:"allowed_origins"`
 }
 
 func Load(path string) (*Config, error) {
