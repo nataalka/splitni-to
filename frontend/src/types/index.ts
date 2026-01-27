@@ -4,3 +4,10 @@ export interface Group {
   description: string;
   created_at: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
+}
