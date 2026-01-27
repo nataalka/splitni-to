@@ -54,6 +54,65 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, expense)
 }
 
+// Update godoc
+// @Summary      Update an existing expense
+// @Description  Update the description, amount, payer, or split distribution of an expense. Only members of the group can perform this action.
+// @Tags         expenses
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        expense_id path string true "Expense UUID"
+// @Param        expense body models.CreateExpenseRequest true "Updated expense data"
+// @Success      204 "No Content - Expense successfully updated"
+// @Failure      400 {object} domain.AppError "Invalid UUID or malformed JSON body"
+// @Failure      401 {object} domain.AppError "Unauthorized - User not logged in"
+// @Failure      403 {object} domain.AppError "Forbidden - User is not a member of the group"
+// @Failure      404 {object} domain.AppError "Expense not found"
+// @Failure      500 {object} domain.AppError "Internal server error"
+// @Router       /expenses/{expense_id} [patch]
+func (h *ExpenseHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, _ := getUserIDFromContext(ctx)
+	expenseID, _ := parseUUID(r, "expense_id")
+
+	var req models.CreateExpenseRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondWithError(w, domain.NewValidationError("invalid request body", err))
+		return
+	}
+
+	if err := h.service.UpdateExpense(ctx, userID, expenseID, req); err != nil {
+		respondWithError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Delete godoc
+// @Summary      Delete an expense
+// @Description  Permanently remove an expense and its associated splits. Only members of the group can perform this action.
+// @Tags         expenses
+// @Security     BearerAuth
+// @Param        expense_id path string true "Expense UUID"
+// @Success      204 "No Content - Expense successfully deleted"
+// @Failure      400 {object} domain.AppError "Invalid UUID"
+// @Failure      401 {object} domain.AppError "Unauthorized"
+// @Failure      403 {object} domain.AppError "Forbidden - User not in group"
+// @Failure      404 {object} domain.AppError "Expense not found"
+// @Failure      500 {object} domain.AppError "Internal server error"
+// @Router       /expenses/{expense_id} [delete]
+func (h *ExpenseHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, _ := getUserIDFromContext(ctx)
+	expenseID, _ := parseUUID(r, "expense_id")
+
+	if err := h.service.DeleteExpense(ctx, userID, expenseID); err != nil {
+		respondWithError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // ListByGroup godoc
 // @Summary      List group expenses
 // @Description  Returns a list of all expenses in a group (with individual splits)

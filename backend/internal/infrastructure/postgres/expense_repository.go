@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
 	"github.com/nataalka/splitni-to/backend/internal/domain/models"
 	"github.com/shopspring/decimal"
 )
@@ -41,6 +42,45 @@ func (r *ExpenseRepository) CreateWithSplits(ctx context.Context, e *models.Expe
 	}
 
 	return tx.Commit()
+}
+
+func (r *ExpenseRepository) Update(ctx context.Context, expense *models.Expense, splits []models.ExpenseSplit) error {
+	tx, err := r.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return domain.NewInternalError("failed to begin transaction", err)
+	}
+	defer tx.Rollback()
+
+	query := `UPDATE expenses SET description = $1, amount = $2, payer_id = $3 WHERE id = $4`
+	_, err = tx.ExecContext(ctx, query, expense.Description, expense.Amount, expense.PayerID, expense.ID)
+	if err != nil {
+		return domain.NewInternalError("could not update expense", err)
+	}
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM expense_splits WHERE expense_id = $1", expense.ID)
+	if err != nil {
+		return domain.NewInternalError("could not clear old splits", err)
+	}
+
+	for _, s := range splits {
+		_, err = tx.ExecContext(ctx,
+			"INSERT INTO expense_splits (expense_id, user_id, amount) VALUES ($1, $2, $3)",
+			expense.ID, s.UserID, s.Amount)
+		if err != nil {
+			return domain.NewInternalError("could not insert new splits", err)
+		}
+	}
+
+	return tx.Commit()
+}
+
+func (r *ExpenseRepository) Delete(ctx context.Context, expenseID uuid.UUID) error {
+	query := `DELETE FROM expenses WHERE id = $1`
+	_, err := r.db.ExecContext(ctx, query, expenseID)
+	if err != nil {
+		return domain.NewInternalError("could not delete expense", err)
+	}
+	return nil
 }
 
 func (r *ExpenseRepository) GetByGroup(ctx context.Context, groupID uuid.UUID) ([]models.Expense, error) {

@@ -53,6 +53,49 @@ func (s *ExpenseService) CreateExpense(ctx context.Context, e *models.Expense) e
 	return s.repo.CreateWithSplits(ctx, e)
 }
 
+func (s *ExpenseService) UpdateExpense(ctx context.Context, userID, expenseID uuid.UUID, req models.CreateExpenseRequest) error {
+	oldExpense, err := s.repo.GetByID(ctx, expenseID)
+	if err != nil {
+		return err
+	}
+
+	isMember, err := s.groupRepo.IsMember(ctx, oldExpense.GroupID, userID)
+	if err != nil || !isMember {
+		return domain.ErrNotInGroup
+	}
+
+	expense := &models.Expense{
+		ID:          expenseID,
+		Description: req.Description,
+		Amount:      req.Amount,
+		PayerID:     req.PayerID,
+	}
+
+	var splits []models.ExpenseSplit
+	for _, sReq := range req.Splits {
+		splits = append(splits, models.ExpenseSplit{
+			UserID: sReq.UserID,
+			Amount: sReq.Amount,
+		})
+	}
+
+	return s.repo.Update(ctx, expense, splits)
+}
+
+func (s *ExpenseService) DeleteExpense(ctx context.Context, userID, expenseID uuid.UUID) error {
+	expense, err := s.repo.GetByID(ctx, expenseID)
+	if err != nil {
+		return err
+	}
+
+	isMember, err := s.groupRepo.IsMember(ctx, expense.GroupID, userID)
+	if err != nil || !isMember {
+		return domain.ErrNotInGroup
+	}
+
+	return s.repo.Delete(ctx, expenseID)
+}
+
 func (s *ExpenseService) GetGroupExpenses(ctx context.Context, groupID uuid.UUID) ([]models.Expense, error) {
 	expenses, err := s.repo.GetByGroup(ctx, groupID)
 	if err != nil {
