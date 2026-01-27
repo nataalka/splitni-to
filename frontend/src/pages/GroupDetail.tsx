@@ -89,7 +89,7 @@ export default function GroupDetailPage() {
           <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Expenses</h2>
           <ArrowUpDown className="h-3 w-3 text-zinc-400"/>
         </div>
-        <ExpenseListCard expenses={expenses}/>
+        <ExpenseListCard expenses={expenses} members={members}/>
       </section>
 
       {/* Members */}

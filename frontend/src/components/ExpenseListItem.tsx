@@ -3,9 +3,10 @@ import type { Expense } from "@/types"
 
 interface ExpenseListItemProps {
   expense: Expense;
+  payerName: string
 }
 
-export function ExpenseListItem({ expense }: ExpenseListItemProps) {
+export function ExpenseListItem({ expense, payerName }: ExpenseListItemProps) {
   return (
     <div className="group flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors cursor-pointer">
       <div className="flex items-center gap-4">
@@ -18,12 +19,12 @@ export function ExpenseListItem({ expense }: ExpenseListItemProps) {
           </span>
         </div>
 
-        <div className="min-w-0">
+        <div>
           <h3 className="font-bold text-zinc-900 leading-tight truncate">
             {expense.description}
           </h3>
           <p className="text-xs text-zinc-500 mt-1">
-            Paid by <span className="font-medium text-zinc-700">You</span> {/* Tu neskôr prepojíme meno platiteľa */}
+            Paid by <span className="font-medium text-zinc-700">{payerName}</span>
           </p>
         </div>
       </div>
