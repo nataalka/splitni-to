@@ -26,7 +26,7 @@ export default function RegisterPage() {
   const navigate = useNavigate()
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", surname: "", email: "", password: "" },
   })
 
   async function onSubmit(data: RegisterValues) {
