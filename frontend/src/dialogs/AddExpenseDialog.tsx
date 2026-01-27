@@ -22,6 +22,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import { Checkbox } from "@/components/ui/checkbox"
 import type { CreateExpenseRequest, User } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
+import { Switch } from "@/components/ui/switch.tsx";
 
 const expenseSchema = z.object({
   description: z.string().min(3, "Description is too short."),
@@ -39,6 +40,8 @@ interface AddExpenseDialogProps {
 
 export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
   const [open, setOpen] = React.useState(false)
+  const [isManual, setIsManual] = React.useState(false)
+  const [manualAmounts, setManualAmounts] = React.useState<Record<string, string>>({})
   const queryClient = useQueryClient()
 
   const form = useForm<ExpenseValues>({
@@ -60,7 +63,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
     },
   })
 
-  const calculatedSplits = React.useMemo(() => {
+  const autoSplits = React.useMemo(() => {
     const totalAmount = parseFloat(watchedAmount);
     const count = watchedMembers.length
 
@@ -85,15 +88,33 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
     });
   }, [watchedAmount, watchedMembers])
 
-  function onSubmit(values: ExpenseValues) {
-    const payload: CreateExpenseRequest = {
-      description: values.description,
-      amount: values.amount,
-      currency: "EUR",
-      payer_id: values.payer_id,
-      splits: calculatedSplits
+  const toggleMode = () => {
+    if (!isManual) {
+      const initialManual: Record<string, string> = {}
+      autoSplits.forEach(s => initialManual[s.user_id] = s.amount)
+      setManualAmounts(initialManual)
     }
-    mutation.mutate(payload)
+    setIsManual(!isManual)
+  }
+
+  function onSubmit(values: ExpenseValues) {
+    const finalSplits = isManual
+      ? watchedMembers.map(id => ({user_id: id, amount: manualAmounts[id] || "0.00"}))
+      : autoSplits
+
+    if (isManual) {
+      const sum = finalSplits.reduce((acc, curr) => acc + parseFloat(curr.amount), 0)
+      if (Math.abs(sum - parseFloat(values.amount)) > 0.01) {
+        toast.error(`Total sum (${sum.toFixed(2)}€) must match amount (${values.amount}€)`)
+        return
+      }
+    }
+
+    mutation.mutate({
+      ...values,
+      currency: "EUR",
+      splits: finalSplits
+    })
   }
 
   return (
@@ -137,7 +158,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
                     <FieldLabel>Amount</FieldLabel>
                     <div className="relative">
                       <Input {...field} placeholder="0.00" className="rounded-xl pr-7"/>
-                      <span className="absolute right-3 top-2.5 text-zinc-400 text-sm">€</span>
+                      <span className="absolute right-3 top-2 text-sm">€</span>
                     </div>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]}/>}
                   </Field>)}
@@ -145,26 +166,55 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
               </div>
             </div>
 
-            <div className="pt-2">
-              <FieldLabel className="flex justify-between items-center">
-                Split with
-                <span className="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full uppercase">
-                  Split Equally
-                </span>
-              </FieldLabel>
+            <div >
+              <div className="flex justify-between items-center">
+                <FieldLabel>Share Distribution</FieldLabel>
+
+                <div className="flex items-center gap-2 bg-zinc-50 px-3 py-2 rounded-2xl border border-zinc-100">
+                  <span className={`text-[10px] font-bold transition-colors ${!isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                    AUTO
+                  </span>
+                  <Switch
+                    checked={isManual}
+                    onCheckedChange={toggleMode}
+                    className="data-[state=checked]:bg-pink-600"
+                  />
+                  <span className={`text-[10px] font-bold transition-colors ${isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                    MANUAL
+                  </span>
+                </div>
+              </div>
+
               <div className="max-h-[250px] overflow-y-auto">
                 <UserListCard
                   users={members}
                   renderSubtext={(user) => {
-                    const splitData = calculatedSplits.find(s => s.user_id === user.id);
-                    const share = splitData?.amount
+                    const isSelected = watchedMembers.includes(user.id);
 
-                    return share ? (
-                      <span className="text-[11px] text-pink-600 font-medium tracking-wide">
-                          owes {share} €
-                      </span>
-                    ) : null;
+                    return (
+                      <div className="h-8 flex items-center">
+                        {!isSelected ? (
+                          <span className="text-[11px] text-zinc-300 italic">Not included</span>
+                        ) : isManual ? (
+                          <div className="mt-1 relative w-24">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={manualAmounts[user.id] || ""}
+                              onChange={(e) => setManualAmounts(prev => ({...prev, [user.id]: e.target.value}))}
+                              className="h-7 text-xs text-pink-600 pr-4 rounded-lg"
+                            />
+                            <span className="absolute right-2 top-1.5 text-pink-600">€</span>
+                          </div>
+                        ) : (
+                          <span className="text-pink-600">
+                          owes {autoSplits.find(s => s.user_id === user.id)?.amount} €
+                        </span>
+                        )}
+                      </div>
+                    )
                   }}
+
                   renderActions={(user) => (
                     <Controller
                       name="selectedMembers"
@@ -192,7 +242,7 @@ export function AddExpenseDialog({groupId, members}: AddExpenseDialogProps) {
           </FieldGroup>
 
           <DialogFooter>
-            <Button type="submit" variant="pinkPrimary" disabled={mutation.isPending}>
+            <Button type="submit" variant="pinkPrimary" className="w-full" disabled={mutation.isPending}>
               {mutation.isPending ? "Adding..." : "Save Expense"}
             </Button>
           </DialogFooter>
