@@ -52,6 +52,62 @@ func (h *GroupHandler) Create(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, group)
 }
 
+// Update godoc
+// @Summary      Update group details
+// @Tags         groups
+// @Param        group_id path string true "Group ID"
+// @Param        group body models.CreateGroupRequest true "New details"
+// @Router       /groups/{group_id} [patch]
+func (h *GroupHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, _ := getUserIDFromContext(ctx)
+
+	groupID, err := parseUUID(r, "group_id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	var req models.CreateGroupRequest
+	err = json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		respondWithError(w, domain.NewValidationError("invalid request body", err))
+		return
+	}
+
+	err = h.groupService.UpdateGroup(ctx, userID, groupID, req)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Delete godoc
+// @Summary      Delete a group
+// @Tags         groups
+// @Param        group_id path string true "Group ID"
+// @Router       /groups/{group_id} [delete]
+func (h *GroupHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, _ := getUserIDFromContext(ctx)
+
+	groupID, err := parseUUID(r, "group_id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	err = h.groupService.DeleteGroup(ctx, userID, groupID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // AddMember godoc
 // @Summary      Add a member to a group
 // @Description  Add a new user to an existing group by their User ID

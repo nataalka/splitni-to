@@ -34,6 +34,36 @@ func (s *GroupService) CreateGroup(ctx context.Context, req models.CreateGroupRe
 	return group, nil
 }
 
+func (s *GroupService) UpdateGroup(ctx context.Context, userID uuid.UUID, groupID uuid.UUID, req models.CreateGroupRequest) error {
+	isMember, err := s.repo.IsMember(ctx, groupID, userID)
+	if err != nil {
+		return err
+	}
+	if !isMember {
+		return domain.ErrNotInGroup
+	}
+
+	group := &models.Group{
+		ID:          groupID,
+		Name:        req.Name,
+		Description: req.Description,
+	}
+
+	return s.repo.Update(ctx, group)
+}
+
+func (s *GroupService) DeleteGroup(ctx context.Context, userID uuid.UUID, groupID uuid.UUID) error {
+	isMember, err := s.repo.IsMember(ctx, groupID, userID)
+	if err != nil {
+		return err
+	}
+	if !isMember {
+		return domain.ErrNotInGroup
+	}
+
+	return s.repo.Delete(ctx, groupID)
+}
+
 func (s *GroupService) AddMemberToGroup(ctx context.Context, actorID, groupID, newMemberID uuid.UUID) error {
 	_, err := s.repo.GetByID(ctx, groupID)
 	if err != nil {

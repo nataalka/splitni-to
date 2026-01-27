@@ -40,6 +40,38 @@ func (r *GroupRepository) Create(ctx context.Context, group *models.Group, userI
 	return tx.Commit()
 }
 
+func (r *GroupRepository) Update(ctx context.Context, group *models.Group) error {
+	query := `UPDATE groups SET name = $1, description = $2 WHERE id = $3`
+
+	result, err := r.db.ExecContext(ctx, query, group.Name, group.Description, group.ID)
+	if err != nil {
+		return domain.NewInternalError("could not update group", err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return domain.ErrGroupNotFound
+	}
+
+	return nil
+}
+
+func (r *GroupRepository) Delete(ctx context.Context, groupID uuid.UUID) error {
+	query := `DELETE FROM groups WHERE id = $1`
+
+	result, err := r.db.ExecContext(ctx, query, groupID)
+	if err != nil {
+		return domain.NewInternalError("could not delete group", err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return domain.ErrGroupNotFound
+	}
+
+	return nil
+}
+
 func (r *GroupRepository) AddMember(ctx context.Context, groupID, userID uuid.UUID) error {
 	query := `
         INSERT INTO group_members (group_id, user_id, joined_at) 
