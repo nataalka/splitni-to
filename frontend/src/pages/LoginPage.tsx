@@ -3,7 +3,7 @@
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { toast } from "sonner"
 import * as z from "zod"
 import api from "@/lib/api"
@@ -13,6 +13,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -111,14 +112,20 @@ export default function LoginPage() {
                   </Field>
                 )}
               />
-
-              <Button type="submit" form="login-form">
-                Sign In
-              </Button>
-
             </FieldGroup>
           </form>
         </CardContent>
+        <CardFooter className="flex-col justify-center gap-4">
+          <Button type="submit" form="login-form" className="w-full">
+            Sign In
+          </Button>
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-pink-600 hover:underline font-medium">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   )
