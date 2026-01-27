@@ -4,6 +4,7 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import * as z from "zod"
 import api from "@/lib/api"
 
@@ -48,7 +49,10 @@ export default function LoginPage() {
       navigate("/groups")
     } catch (error: any) {
       console.error("Login failed", error)
-      alert("Invalid email or password.")
+      toast.error("Login failed", {
+        description: "Invalid email or password. Please try again.",
+        position: "top-center"
+      })
     }
   }
 
@@ -69,7 +73,7 @@ export default function LoginPage() {
               <Controller
                 name="email"
                 control={form.control}
-                render={({ field, fieldState }) => (
+                render={({field, fieldState}) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="login-email">Email</FieldLabel>
                     <Input
@@ -81,7 +85,7 @@ export default function LoginPage() {
                       autoComplete="email"
                     />
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]}/>
                     )}
                   </Field>
                 )}
@@ -91,7 +95,7 @@ export default function LoginPage() {
               <Controller
                 name="password"
                 control={form.control}
-                render={({ field, fieldState }) => (
+                render={({field, fieldState}) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="login-password">Password</FieldLabel>
                     <Input
@@ -102,7 +106,7 @@ export default function LoginPage() {
                       aria-invalid={fieldState.invalid}
                     />
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]}/>
                     )}
                   </Field>
                 )}
