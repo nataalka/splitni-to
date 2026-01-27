@@ -36,8 +36,8 @@ export default function GroupDetailPage() {
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight">{group?.name}</h1>
             <p className="text-zinc-500 text-sm mt-1">{group?.description}</p>
           </div>
-          <Button className="bg-pink-600 hover:bg-pink-700 rounded-xl shadow-lg shadow-pink-100 transition-all active:scale-95">
-            <Plus className="mr-2 h-4 w-4"/> Add Expense
+          <Button variant="pinkPrimary">
+            <Plus className="h-4 w-4"/> Add Expense
           </Button>
         </div>
 

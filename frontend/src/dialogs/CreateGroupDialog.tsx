@@ -56,7 +56,7 @@ export function CreateGroupDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-pink-600 hover:bg-pink-700">
+        <Button variant="pinkPrimary">
           <Plus className="h-4 w-4" /> New Group
         </Button>
       </DialogTrigger>

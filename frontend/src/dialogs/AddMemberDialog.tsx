@@ -40,7 +40,7 @@ export function AddMemberDialog({groupId}: { groupId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border-pink-200 hover:bg-pink-50">
+        <Button variant="pinkOutline" size="sm">
           <UserPlus className="h-4 w-4 mr-2 text-pink-600"/> Add Friend
         </Button>
       </DialogTrigger>
