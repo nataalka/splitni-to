@@ -20,13 +20,13 @@ export function UserListItem({user, actions, subtext, className = ""}: UserListI
           {initials}
         </div>
 
-        <div className="min-w-0">
+        <div>
           <p className="text-sm font-semibold leading-none text-zinc-900 truncate">
             {user.name} {user.surname}
           </p>
-          <p className="text-xs text-muted-foreground truncate mt-1">
+          <div className="text-xs text-muted-foreground truncate mt-1">
             {subtext ? subtext : <span>{user.email}</span>}
-          </p>
+          </div>
         </div>
       </div>
 
