@@ -1,14 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import LoginPage from "@/pages/LoginPage"
 import { Toaster } from "@/components/ui/sonner";
 import RegisterPage from "@/pages/RegisterPage";
 import GroupsPage from "@/pages/GroupsPage";
 import GroupDetailPage from "@/pages/GroupDetail";
 import FriendsPage from "@/pages/FriendsPage.tsx";
+import MainLayout from "@/pages/MainLayout.tsx";
 
 export function App() {
-  return (
-    <BrowserRouter>
+  return (<BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace/>}/>
 
@@ -16,16 +16,17 @@ export function App() {
 
         <Route path="/register" element={<RegisterPage/>}/>
 
-        <Route path="/friends" element={<FriendsPage/>}/>
-
-        <Route path="/groups" element={<GroupsPage/>}/>
-        <Route path="/groups/:id" element={<GroupDetailPage/>}/>
-
         <Route path="*" element={<div className="p-10 text-center">404 - Not Found</div>}/>
+
+        <Route element={<MainLayout/>}>
+          <Route path="/friends" element={<FriendsPage/>}/>
+
+          <Route path="/groups" element={<GroupsPage/>}/>
+          <Route path="/groups/:id" element={<GroupDetailPage/>}/>
+        </Route>
       </Routes>
       <Toaster/>
-    </BrowserRouter>
-  )
+    </BrowserRouter>)
 }
 
 export default App;
