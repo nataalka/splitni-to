@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group } from "@/types"
-import { Button } from "@/components/ui/button"
 import { CreateGroupDialog } from "@/dialogs/CreateGroupDialog.tsx";
 import { GroupListCard } from "@/components/GroupListCard.tsx";
 

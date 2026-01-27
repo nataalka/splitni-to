@@ -1,8 +1,7 @@
 import * as React from "react"
-import { Link } from "react-router-dom"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Users, ChevronRight } from "lucide-react"
+import { Users } from "lucide-react"
 import type { Group } from "@/types"
 import { GroupListItem } from "@/components/GroupListItem.tsx";
 

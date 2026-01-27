@@ -31,14 +31,14 @@ export default function GroupDetailPage() {
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
       <section className="space-y-6">
-        <div className="flex justify-between items-start">
-          <div>
+        <div className="flex-col items-start justify-between gap-4">
+          <div className="flex justify-between">
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight">{group?.name}</h1>
-            <p className="text-zinc-500 text-sm mt-1">{group?.description}</p>
+            <Button variant="pinkPrimary">
+              <Plus className="h-4 w-4"/> Add Expense
+            </Button>
           </div>
-          <Button variant="pinkPrimary">
-            <Plus className="h-4 w-4"/> Add Expense
-          </Button>
+          <p className="text-zinc-500 text-sm">{group?.description}</p>
         </div>
 
         {/* Stats Card */}
