@@ -71,20 +71,10 @@ func (r *UserRepository) GetByIDs(ctx context.Context, ids []uuid.UUID) ([]model
 
 	query := `SELECT id, email, name, surname FROM users WHERE id = ANY($1)`
 
-	rows, err := r.db.QueryContext(ctx, query, pq.Array(ids))
+	var users []models.User
+	err := r.db.SelectContext(ctx, &users, query, pq.Array(ids))
 	if err != nil {
 		return nil, err
-	}
-	defer rows.Close()
-
-	var users []models.User
-	for rows.Next() {
-		var u models.User
-		err = rows.Scan(&u.ID, &u.Email, &u.Name, &u.Surname)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, u)
 	}
 
 	return users, nil

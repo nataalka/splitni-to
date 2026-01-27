@@ -83,6 +83,7 @@ func groupRoutes(cfg RouterConfig) *chi.Mux {
 			r.Post("/", cfg.ExpenseHandler.Create)
 			r.Get("/", cfg.ExpenseHandler.ListByGroup)
 			r.Get("/total", cfg.ExpenseHandler.GetTotal)
+			r.Get("/{expense_id}", cfg.ExpenseHandler.GetExpenseDetailed)
 		})
 
 		r.Route("/balances", func(r chi.Router) {

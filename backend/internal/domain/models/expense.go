@@ -24,6 +24,22 @@ type ExpenseSplit struct {
 	Amount    decimal.Decimal `json:"amount" postgres:"amount"`
 }
 
+type ExpenseSplitDetailed struct {
+	User   User            `json:"user"`
+	Amount decimal.Decimal `json:"amount"`
+}
+
+type ExpenseDetailed struct {
+	ID          uuid.UUID              `json:"id"`
+	GroupID     uuid.UUID              `json:"group_id"`
+	Payer       User                   `json:"payer"`
+	Amount      decimal.Decimal        `json:"amount"`
+	Currency    string                 `json:"currency"`
+	Description string                 `json:"description"`
+	CreatedAt   time.Time              `json:"created_at"`
+	Splits      []ExpenseSplitDetailed `json:"splits"`
+}
+
 type CreateExpenseRequest struct {
 	PayerID     uuid.UUID                   `json:"payer_id"`
 	Amount      decimal.Decimal             `json:"amount"`

@@ -59,12 +59,45 @@ func (s *ExpenseService) GetGroupExpenses(ctx context.Context, groupID uuid.UUID
 	return expenses, nil
 }
 
-func (s *ExpenseService) GetExpenseDetails(ctx context.Context, id uuid.UUID) (*models.Expense, error) {
-	expense, err := s.repo.GetByID(ctx, id)
+func (s *ExpenseService) GetExpenseDetailed(ctx context.Context, expenseID uuid.UUID) (*models.ExpenseDetailed, error) {
+	expense, err := s.repo.GetByID(ctx, expenseID)
 	if err != nil {
 		return nil, domain.ErrExpenseNotFound
 	}
-	return expense, nil
+
+	userIDs := []uuid.UUID{expense.PayerID}
+	for _, split := range expense.Splits {
+		userIDs = append(userIDs, split.UserID)
+	}
+
+	users, err := s.userRepo.GetByIDs(ctx, userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	userMap := make(map[uuid.UUID]models.User)
+	for _, u := range users {
+		userMap[u.ID] = u
+	}
+
+	detailedSplits := make([]models.ExpenseSplitDetailed, 0, len(expense.Splits))
+	for _, split := range expense.Splits {
+		detailedSplits = append(detailedSplits, models.ExpenseSplitDetailed{
+			User:   userMap[split.UserID],
+			Amount: split.Amount,
+		})
+	}
+
+	return &models.ExpenseDetailed{
+		ID:          expense.ID,
+		GroupID:     expense.GroupID,
+		Payer:       userMap[expense.PayerID],
+		Amount:      expense.Amount,
+		Currency:    expense.Currency,
+		Description: expense.Description,
+		CreatedAt:   expense.CreatedAt,
+		Splits:      detailedSplits,
+	}, nil
 }
 
 func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID) ([]models.MemberBalance, error) {

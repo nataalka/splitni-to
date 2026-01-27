@@ -161,3 +161,29 @@ func (h *ExpenseHandler) GetUserBalance(w http.ResponseWriter, r *http.Request) 
 
 	writeJSON(w, http.StatusOK, balance)
 }
+
+// GetExpenseDetailed godoc
+// @Summary      Get expense details
+// @Description  Returns detailed information about an expense including payer, group and split details with user objects.
+// @Tags         expenses
+// @Produce      json
+// @Param        id path string true "Expense ID"
+// @Success      200 {object} models.ExpenseDetailed
+// @Failure      404 {object} ErrorResponse
+// @Failure      500 {object} ErrorResponse
+// @Router       /expenses/{id} [get]
+func (h *ExpenseHandler) GetExpenseDetailed(w http.ResponseWriter, r *http.Request) {
+	expenseID, err := parseUUID(r, "expense_id")
+	if err != nil {
+		respondWithError(w, domain.NewValidationError("invalid expense id", err))
+		return
+	}
+
+	expense, err := h.service.GetExpenseDetailed(r.Context(), expenseID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, expense)
+}
