@@ -85,7 +85,7 @@ func (h *ExpenseHandler) ListByGroup(w http.ResponseWriter, r *http.Request) {
 // @Tags         expenses
 // @Produce      json
 // @Param        group_id path string true "Group ID"
-// @Success      200 {object} models.MemberBalance
+// @Success      200 {object} models.MemberBalance[]
 // @Failure      400 {object} ErrorResponse
 // @Failure      500 {object} ErrorResponse
 // @Router       /groups/{group_id}/balances [get]
@@ -103,4 +103,61 @@ func (h *ExpenseHandler) GetGroupBalances(w http.ResponseWriter, r *http.Request
 	}
 
 	writeJSON(w, http.StatusOK, balances)
+}
+
+// GetTotal godoc
+// @Summary      Get total group spent
+// @Description  Calculates the total spending in the group
+// @Tags         expenses
+// @Produce      json
+// @Param        group_id path string true "Group ID"
+// @Success      200 {object} models.TotalSpent
+// @Failure      400 {object} ErrorResponse
+// @Failure      500 {object} ErrorResponse
+// @Router       /groups/{group_id}/expenses/total [get]
+func (h *ExpenseHandler) GetTotal(w http.ResponseWriter, r *http.Request) {
+	groupID, err := parseUUID(r, "group_id")
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	total, err := h.service.GetTotalSpent(r.Context(), groupID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, models.TotalSpent{TotalSpent: total})
+}
+
+// GetUserBalance godoc
+// @Summary      Get specific user balance in group
+// @Description  Calculates the total expenses and awaiting incomes of the user in the group
+// @Tags         expenses
+// @Produce      json
+// @Param        group_id path string true "Group ID"
+// @Param        user_id path string true "User ID"
+// @Success      200 {object} models.MemberBalance
+// @Failure      400 {object} ErrorResponse
+// @Failure      500 {object} ErrorResponse
+// @Router       /groups/{group_id}/balances/{user_id} [get]
+func (h *ExpenseHandler) GetUserBalance(w http.ResponseWriter, r *http.Request) {
+	groupID, err := parseUUID(r, "group_id")
+	if err != nil {
+		respondWithError(w, domain.NewValidationError("invalid group id", err))
+	}
+	userID, err := parseUUID(r, "user_id")
+	if err != nil {
+		respondWithError(w, domain.NewValidationError("invalid user id"))
+		return
+	}
+
+	balance, err := h.service.GetUserBalance(r.Context(), groupID, userID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, balance)
 }

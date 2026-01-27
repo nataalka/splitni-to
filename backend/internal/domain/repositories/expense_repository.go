@@ -13,4 +13,6 @@ type ExpenseRepository interface {
 	GetByGroup(ctx context.Context, groupID uuid.UUID) ([]models.Expense, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*models.Expense, error)
 	GetBalancesData(ctx context.Context, groupID uuid.UUID) (map[uuid.UUID]decimal.Decimal, error)
+	GetTotalByGroup(ctx context.Context, groupID uuid.UUID) (decimal.Decimal, error)
+	GetUserBalance(ctx context.Context, groupID uuid.UUID, userID uuid.UUID) (decimal.Decimal, error)
 }

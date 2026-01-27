@@ -105,3 +105,28 @@ func (s *ExpenseService) GetGroupBalances(ctx context.Context, groupID uuid.UUID
 
 	return result, nil
 }
+
+func (s *ExpenseService) GetTotalSpent(ctx context.Context, groupID uuid.UUID) (decimal.Decimal, error) {
+	total, err := s.repo.GetTotalByGroup(ctx, groupID)
+	if err != nil {
+		return decimal.Zero, domain.NewInternalError("failed to calculate total spent", err)
+	}
+	return total, nil
+}
+
+func (s *ExpenseService) GetUserBalance(ctx context.Context, groupID uuid.UUID, userID uuid.UUID) (*models.MemberBalance, error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return nil, domain.ErrUserNotFound
+	}
+
+	balance, err := s.repo.GetUserBalance(ctx, groupID, userID)
+	if err != nil {
+		return nil, domain.NewInternalError("failed to calculate user balance", err)
+	}
+
+	return &models.MemberBalance{
+		User:    *user,
+		Balance: balance,
+	}, nil
+}

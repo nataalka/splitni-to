@@ -59,3 +59,7 @@ type MemberBalance struct {
 	User    User            `json:"user"`
 	Balance decimal.Decimal `json:"balance"`
 }
+
+type TotalSpent struct {
+	TotalSpent decimal.Decimal `json:"total_spent"`
+}

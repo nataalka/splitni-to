@@ -159,3 +159,33 @@ func (r *ExpenseRepository) GetBalancesData(ctx context.Context, groupID uuid.UU
 	}
 	return balances, nil
 }
+
+func (r *ExpenseRepository) GetTotalByGroup(ctx context.Context, groupID uuid.UUID) (decimal.Decimal, error) {
+	var total decimal.Decimal
+	query := `SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE group_id = $1`
+
+	err := r.db.GetContext(ctx, &total, query, groupID)
+	if err != nil {
+		return decimal.Zero, err
+	}
+
+	return total, nil
+}
+
+func (r *ExpenseRepository) GetUserBalance(ctx context.Context, groupID uuid.UUID, userID uuid.UUID) (decimal.Decimal, error) {
+	var balance decimal.Decimal
+	query := `
+		SELECT 
+			(SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE group_id = $1 AND payer_id = $2) -
+			(SELECT COALESCE(SUM(es.amount), 0) FROM expense_splits es 
+			 JOIN expenses e ON es.expense_id = e.id 
+			 WHERE e.group_id = $1 AND es.user_id = $2)
+	`
+
+	err := r.db.GetContext(ctx, &balance, query, groupID, userID)
+	if err != nil {
+		return decimal.Zero, err
+	}
+
+	return balance, nil
+}
