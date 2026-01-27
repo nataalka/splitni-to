@@ -1,26 +1,46 @@
 import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
-import type { Group, User } from "@/types"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import type { Group, User, Expense, MemberBalance } from "@/types"
+import { Card } from "@/components/ui/card"
 import { ArrowUpDown, Plus, Wallet, PieChart } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
+import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";
+import { AddExpenseDialog } from "@/dialogs/AddExpenseDialog.tsx";
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
 
+  {/* General Info */}
   const { data: group, isLoading: groupLoading, error } = useQuery<Group>({
     queryKey: ["group", id],
     queryFn: () => api.get(`/groups/${id}`).then(res => res.data),
   })
 
+  {/* Members */}
   const { data: members, isLoading: membersLoading } = useQuery<User[]>({
     queryKey: ["group", id, "members"],
     queryFn: () => api.get(`/groups/${id}/members`).then(res => res.data),
     enabled: !!id,
   })
+
+  {/* Expenses */}
+  const { data: expenses } = useQuery<Expense[]>({
+    queryKey: ["group", id, "expenses"],
+    queryFn: () => api.get(`/groups/${id}/expenses`).then(res => res.data),
+    enabled: !!id,
+  })
+
+  {/* Balances */}
+  const { data: balances } = useQuery<MemberBalance[]>({
+    queryKey: ["group", id, "balances"],
+    queryFn: () => api.get(`/groups/${id}/balances`).then(res => res.data),
+    enabled: !!id,
+  })
+
+  {/* TODO fetch from api */}
+  const totalSpent = expenses?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
   if (groupLoading || membersLoading) {
     return <div className="p-20 text-center text-zinc-400 animate-pulse font-medium">Loading group details...</div>
@@ -34,9 +54,7 @@ export default function GroupDetailPage() {
         <div className="flex-col items-start justify-between gap-4">
           <div className="flex justify-between">
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight">{group?.name}</h1>
-            <Button variant="pinkPrimary">
-              <Plus className="h-4 w-4"/> Add Expense
-            </Button>
+            {members && <AddExpenseDialog groupId={id!} members={members} />}
           </div>
           <p className="text-zinc-500 text-sm">{group?.description}</p>
         </div>
@@ -49,7 +67,7 @@ export default function GroupDetailPage() {
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Spent</p>
-              <p className="text-2xl font-black text-zinc-900">0.00 €</p>
+              <p className="text-2xl font-black text-zinc-900">{totalSpent.toFixed(2)} €</p>
             </div>
           </Card>
 
@@ -71,11 +89,7 @@ export default function GroupDetailPage() {
           <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Expenses</h2>
           <ArrowUpDown className="h-3 w-3 text-zinc-400"/>
         </div>
-        <Card className="rounded-3xl border-zinc-100 shadow-sm bg-white overflow-hidden min-h-[100px] flex items-center justify-center">
-          <CardContent className="p-0">
-            <p className="text-sm text-zinc-400 italic py-8">No expenses yet. Start by adding one!</p>
-          </CardContent>
-        </Card>
+        <ExpenseListCard expenses={expenses}/>
       </section>
 
       {/* Members */}
