@@ -1,4 +1,4 @@
-module github.com/nataalka/splitni-to
+module github.com/nataalka/splitni-to/backend
 
 go 1.25.4
 

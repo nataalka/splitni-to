@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
+	_ "github.com/nataalka/splitni-to/backend/docs"
 	handlers2 "github.com/nataalka/splitni-to/backend/internal/api/handlers"
-	_ "github.com/nataalka/splitni-to/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
