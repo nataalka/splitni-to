@@ -2,15 +2,17 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group, User, Expense, MemberBalance } from "@/types"
-import { Card } from "@/components/ui/card"
 import { ArrowUpDown, Wallet, PieChart } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
 import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";
 import { AddExpenseDialog } from "@/dialogs/AddExpenseDialog.tsx";
+import { useAuth } from "@/hooks/useAuth.ts";
+import { StatsCard } from "@/components/StatsCard.tsx";
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { userId } = useAuth()
 
   {/* General Info */}
   const { data: group, isLoading: groupLoading, error } = useQuery<Group>({
@@ -32,15 +34,23 @@ export default function GroupDetailPage() {
     enabled: !!id,
   })
 
-  {/* Balances */}
-  const { data: balances } = useQuery<MemberBalance[]>({
-    queryKey: ["group", id, "balances"],
-    queryFn: () => api.get(`/groups/${id}/balances`).then(res => res.data),
+  {/* Group Total */}
+  const { data: totalData } = useQuery<{ total_spent: string }>({
+    queryKey: ["group", id, "total-spent"],
+    queryFn: () => api.get(`/groups/${id}/expenses/total`).then(res => res.data),
     enabled: !!id,
   })
 
-  {/* TODO fetch from api */}
-  const totalSpent = expenses?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
+  {/* User's balance */}
+  const { data: usersBalanceData } = useQuery<MemberBalance>({
+    queryKey: ["group", id, "balance", userId],
+    queryFn: () => api.get(`/groups/${id}/balances/${userId}`).then(res => res.data),
+    enabled: !!id && !!userId,
+  })
+
+  const myBalance = Number(usersBalanceData?.balance || 0);
+  const isPositive = myBalance > 0;
+  const isNegative = myBalance < 0;
 
   if (groupLoading || membersLoading) {
     return <div className="p-20 text-center text-zinc-400 animate-pulse font-medium">Loading group details...</div>
@@ -59,28 +69,21 @@ export default function GroupDetailPage() {
           <p className="text-zinc-500 text-sm">{group?.description}</p>
         </div>
 
-        {/* Stats Card */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="rounded-3xl border-zinc-100 shadow-sm bg-white p-4 flex flex-col justify-between h-32">
-            <div className="h-8 w-8 rounded-full bg-pink-50 flex items-center justify-center text-pink-600">
-              <Wallet className="h-4 w-4"/>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Total Spent</p>
-              <p className="text-2xl font-black text-zinc-900">{totalSpent.toFixed(2)} €</p>
-            </div>
-          </Card>
-
-          <Card className="rounded-3xl border-zinc-100 shadow-sm bg-white p-4 flex flex-col justify-between h-32">
-            <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-              <PieChart className="h-4 w-4"/>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">Your Share</p>
-              <p className="text-2xl font-black text-zinc-900 text-blue-600">0.00 €</p>
-            </div>
-          </Card>
+          <StatsCard
+            label={isPositive ? "You are owed" : isNegative ? "You owe" : "Your balance"}
+            value={Math.abs(myBalance)}
+            icon={PieChart}
+            variant={isPositive ? "positive" : isNegative ? "negative" : "default"}
+          />
+          <StatsCard
+            label="Group Total"
+            value={Number(totalData?.total_spent || 0)}
+            icon={Wallet}
+          />
         </div>
+
       </section>
 
       {/* Expenses */}
