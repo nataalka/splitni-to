@@ -67,6 +67,7 @@ func NewRouter(cfg RouterConfig, jwtSecret string) *chi.Mux {
 
 func userRoutes(cfg RouterConfig) *chi.Mux {
 	r := chi.NewRouter()
+	r.Get("/me", cfg.UserHandler.GetMe)
 	r.Get("/{user_id}", cfg.UserHandler.GetByID)
 	return r
 }

@@ -84,6 +84,32 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, res)
 }
 
+// GetMe godoc
+// @Summary      Get current user profile
+// @Description  Fetch information of the currently authenticated user
+// @Tags         auth
+// @Security     BearerAuth
+// @Produce      json
+// @Success      200 {object} models.User
+// @Failure      401 {object} domain.AppError
+// @Router       /me [get]
+func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, err := getUserIDFromContext(ctx)
+	if err != nil {
+		respondWithError(w, domain.NewAuthError("unauthorized: user id not found in context"))
+		return
+	}
+
+	user, err := h.userService.GetByID(ctx, userID)
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, user)
+}
+
 // GetByID godoc
 // @Summary      Get user profile
 // @Description  Fetch user information by their unique ID
