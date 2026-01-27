@@ -59,10 +59,13 @@ export default function GroupDetailPage() {
   if (error) return <div className="p-20 text-center text-red-500 font-medium">Group not found.</div>
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-4">
       {/* Header */}
       <section className="space-y-6">
         <div className="flex-col items-start justify-between gap-4">
+          <p className="text-xs font-black text-zinc-600 uppercase tracking-widest">
+            Group Detail
+          </p>
           <div className="flex justify-between">
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight">{group?.name}</h1>
             {group && <GroupActions group={group} />}
@@ -90,7 +93,9 @@ export default function GroupDetailPage() {
       {/* Expenses */}
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Expenses</h2>
+          <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 px-2">
+            Recent Expenses
+          </h2>
           {members && <ExpenseFormDialog groupId={id!} members={members} />}
         </div>
         <ExpenseListCard expenses={expenses} members={members}/>
@@ -99,7 +104,9 @@ export default function GroupDetailPage() {
       {/* Members */}
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Group Members</h2>
+          <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 px-2">
+            Group Members
+          </h2>
           <AddMemberDialog groupId={id || ""}/>
         </div>
         <UserListCard

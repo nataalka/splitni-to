@@ -38,22 +38,7 @@ export default function ExpenseDetailPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-4">
       {/* Header */}
-      <header className="relative">
-        <div className="flex flex-wrap items-center gap-2 mb-2">
-          {/* Group Badge */}
-          <span
-            className="bg-zinc-900 text-white text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded-full shadow-sm">
-            {expense.group.name}
-          </span>
-
-          {/* Date Badge */}
-          <div
-            className="flex items-center gap-1.5 bg-zinc-100 text-zinc-500 text-[9px] font-black uppercase tracking-[0.1em] px-2.5 py-1 rounded-full border border-zinc-200">
-            <Calendar className="h-3 w-3"/>
-            {format(new Date(expense.created_at), "d. MMM yyyy", {locale: sk})}
-          </div>
-        </div>
-
+      <header className="relative space-y-2">
         <div className="flex justify-between items-start gap-4">
           <div className="space-y-1">
             <p className="text-xs font-black text-zinc-600 uppercase tracking-widest">
@@ -68,6 +53,20 @@ export default function ExpenseDetailPage() {
             expense={expense!}
             members={groupMembers || []}
           />
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          {/* Group Badge */}
+          <span
+            className="bg-zinc-900 text-white text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded-full shadow-sm">
+            {expense.group.name}
+          </span>
+
+          {/* Date Badge */}
+          <div
+            className="flex items-center gap-1.5 bg-zinc-100 text-zinc-500 text-[9px] font-black uppercase tracking-[0.1em] px-2.5 py-1 rounded-full border border-zinc-200">
+            <Calendar className="h-3 w-3"/>
+            {format(new Date(expense.created_at), "d. MMM yyyy", {locale: sk})}
+          </div>
         </div>
       </header>
 

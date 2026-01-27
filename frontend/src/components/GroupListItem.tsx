@@ -15,7 +15,7 @@ export function GroupListItem({ group }: GroupListItemProps) {
     >
       <div className="flex items-center gap-4">
         <div
-          className="h-12 w-12 rounded-2xl bg-pink-50 flex items-center justify-center text-pink-600 border border-pink-100 group-hover:bg-pink-100 transition-colors">
+          className="h-10 w-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-600 border border-pink-100 group-hover:bg-pink-100 transition-colors">
           <Users className="h-6 w-6"/>
         </div>
 

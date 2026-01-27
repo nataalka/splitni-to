@@ -35,7 +35,7 @@ export default function FriendsPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <div className="flex-col items-start justify-between gap-4">
+      <div className="flex-col gap-8">
         <div className="flex justify-between">
           <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
             Friends
