@@ -4,6 +4,7 @@ import type { Group } from "@/types"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Users } from "lucide-react"
+import { CreateGroupDialog } from "@/dialogs/CreateGroupDialog.tsx";
 
 export default function GroupsPage() {
   const { data: groups, isLoading, error } = useQuery<Group[]>({
@@ -24,9 +25,7 @@ export default function GroupsPage() {
           <h1 className="text-2xl font-bold tracking-tight">My Groups</h1>
           <p className="text-muted-foreground">Manage your shared expenses and groups.</p>
         </div>
-        <Button className="bg-pink-600 hover:bg-pink-700">
-          <Plus className="h-4 w-4" /> New Group
-        </Button>
+        <CreateGroupDialog/>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
