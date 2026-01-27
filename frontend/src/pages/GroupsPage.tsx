@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group } from "@/types"
-import { CreateGroupDialog } from "@/dialogs/CreateGroupDialog.tsx";
 import { GroupListCard } from "@/components/GroupListCard.tsx";
+import { GroupFormDialog } from "@/dialogs/GroupFormDialog.tsx";
 
 export default function GroupsPage() {
   const {data: groups, isLoading, error} = useQuery<Group[]>({
@@ -20,7 +20,7 @@ export default function GroupsPage() {
       <div className="flex-col items-start justify-between gap-4">
         <div className="flex justify-between">
           <h1 className="text-3xl font-black text-zinc-900 tracking-tight">Groups</h1>
-          <CreateGroupDialog/>
+          <GroupFormDialog/>
         </div>
         <p className="text-zinc-500 text-sm mt-1">Manage your shared expenses and groups.</p>
       </div>

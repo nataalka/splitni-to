@@ -2,13 +2,14 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group, User, Expense, MemberBalance } from "@/types"
-import { ArrowUpDown, Wallet, PieChart } from "lucide-react"
+import { Wallet, PieChart } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
 import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";
 import { AddExpenseDialog } from "@/dialogs/AddExpenseDialog.tsx";
 import { useAuth } from "@/hooks/useAuth.ts";
 import { StatsCard } from "@/components/StatsCard.tsx";
+import { GroupActions } from "@/actions/GroupActions.tsx";
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -64,7 +65,7 @@ export default function GroupDetailPage() {
         <div className="flex-col items-start justify-between gap-4">
           <div className="flex justify-between">
             <h1 className="text-3xl font-black text-zinc-900 tracking-tight">{group?.name}</h1>
-            {members && <AddExpenseDialog groupId={id!} members={members} />}
+            {group && <GroupActions group={group} />}
           </div>
           <p className="text-zinc-500 text-sm">{group?.description}</p>
         </div>
@@ -90,7 +91,7 @@ export default function GroupDetailPage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Recent Expenses</h2>
-          <ArrowUpDown className="h-3 w-3 text-zinc-400"/>
+          {members && <AddExpenseDialog groupId={id!} members={members} />}
         </div>
         <ExpenseListCard expenses={expenses} members={members}/>
       </section>
