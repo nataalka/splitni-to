@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/jwtauth/v5"
+	handlers2 "github.com/nataalka/splitni-to/backend/internal/api/handlers"
 	_ "github.com/nataalka/splitni-to/docs"
-	"github.com/nataalka/splitni-to/internal/api/handlers"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -18,10 +18,10 @@ var (
 )
 
 type RouterConfig struct {
-	UserHandler    *handlers.UserHandler
-	GroupHandler   *handlers.GroupHandler
-	FriendHandler  *handlers.FriendHandler
-	ExpenseHandler *handlers.ExpenseHandler
+	UserHandler    *handlers2.UserHandler
+	GroupHandler   *handlers2.GroupHandler
+	FriendHandler  *handlers2.FriendHandler
+	ExpenseHandler *handlers2.ExpenseHandler
 	AllowedOrigins []string
 }
 

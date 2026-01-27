@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/nataalka/splitni-to/internal/domain"
-	"github.com/nataalka/splitni-to/internal/domain/models"
-	"github.com/nataalka/splitni-to/internal/domain/services"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/domain/services"
 )
 
 type ExpenseHandler struct {

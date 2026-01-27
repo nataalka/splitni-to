@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/nataalka/splitni-to/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
 	"github.com/shopspring/decimal"
 )
 

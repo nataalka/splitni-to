@@ -4,17 +4,17 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/nataalka/splitni-to/internal/domain"
-	"github.com/nataalka/splitni-to/internal/domain/models"
-	"github.com/nataalka/splitni-to/internal/domain/repositories"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
+	repositories2 "github.com/nataalka/splitni-to/backend/internal/domain/repositories"
 )
 
 type FriendService struct {
-	friendRepo repositories.FriendRepository
-	userRepo   repositories.UserRepository
+	friendRepo repositories2.FriendRepository
+	userRepo   repositories2.UserRepository
 }
 
-func NewFriendService(fr repositories.FriendRepository, ur repositories.UserRepository) *FriendService {
+func NewFriendService(fr repositories2.FriendRepository, ur repositories2.UserRepository) *FriendService {
 	return &FriendService{
 		friendRepo: fr,
 		userRepo:   ur,

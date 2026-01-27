@@ -8,11 +8,11 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/nataalka/splitni-to/internal/api"
-	"github.com/nataalka/splitni-to/internal/api/handlers"
-	"github.com/nataalka/splitni-to/internal/config"
-	"github.com/nataalka/splitni-to/internal/domain/services"
-	"github.com/nataalka/splitni-to/internal/infrastructure/postgres"
+	"github.com/nataalka/splitni-to/backend/internal/api"
+	handlers2 "github.com/nataalka/splitni-to/backend/internal/api/handlers"
+	"github.com/nataalka/splitni-to/backend/internal/config"
+	services2 "github.com/nataalka/splitni-to/backend/internal/domain/services"
+	postgres2 "github.com/nataalka/splitni-to/backend/internal/infrastructure/postgres"
 )
 
 // @title           Splitni-to API
@@ -50,21 +50,21 @@ func runApp(cfg *config.Config) error {
 
 	jwtSecret := cfg.Auth.JWTSecret
 
-	userRepo := postgres.NewPostgresUserRepository(db)
-	userService := services.NewUserService(userRepo)
-	userHandler := handlers.NewUserHandler(userService, jwtSecret)
+	userRepo := postgres2.NewPostgresUserRepository(db)
+	userService := services2.NewUserService(userRepo)
+	userHandler := handlers2.NewUserHandler(userService, jwtSecret)
 
-	groupRepo := postgres.NewPostgresGroupRepository(db)
-	groupService := services.NewGroupService(groupRepo)
-	groupHandler := handlers.NewGroupHandler(groupService)
+	groupRepo := postgres2.NewPostgresGroupRepository(db)
+	groupService := services2.NewGroupService(groupRepo)
+	groupHandler := handlers2.NewGroupHandler(groupService)
 
-	friendRepo := postgres.NewPostgresFriendRepository(db)
-	friendService := services.NewFriendService(friendRepo, userRepo)
-	friendHandler := handlers.NewFriendHandler(friendService)
+	friendRepo := postgres2.NewPostgresFriendRepository(db)
+	friendService := services2.NewFriendService(friendRepo, userRepo)
+	friendHandler := handlers2.NewFriendHandler(friendService)
 
-	expenseRepo := postgres.NewExpenseRepository(db)
-	expenseService := services.NewExpenseService(expenseRepo, userRepo)
-	expenseHandler := handlers.NewExpenseHandler(expenseService)
+	expenseRepo := postgres2.NewExpenseRepository(db)
+	expenseService := services2.NewExpenseService(expenseRepo, userRepo)
+	expenseHandler := handlers2.NewExpenseHandler(expenseService)
 
 	routerConfig := api.RouterConfig{
 		UserHandler:    userHandler,

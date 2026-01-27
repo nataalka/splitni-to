@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/nataalka/splitni-to/internal/domain"
-	"github.com/nataalka/splitni-to/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
+	models2 "github.com/nataalka/splitni-to/backend/internal/domain/models"
 )
 
 type GroupRepository struct {
@@ -19,7 +19,7 @@ func NewPostgresGroupRepository(db *sqlx.DB) *GroupRepository {
 	return &GroupRepository{db: db}
 }
 
-func (r *GroupRepository) Create(ctx context.Context, group *models.Group, userID uuid.UUID) error {
+func (r *GroupRepository) Create(ctx context.Context, group *models2.Group, userID uuid.UUID) error {
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
 		return domain.NewInternalError("failed to begin transaction", err)
@@ -64,8 +64,8 @@ func (r *GroupRepository) IsMember(ctx context.Context, groupID, userID uuid.UUI
 	return exists, err
 }
 
-func (r *GroupRepository) GetByID(ctx context.Context, groupID uuid.UUID) (*models.Group, error) {
-	var group models.Group
+func (r *GroupRepository) GetByID(ctx context.Context, groupID uuid.UUID) (*models2.Group, error) {
+	var group models2.Group
 	query := `SELECT id, name, created_at FROM groups WHERE id = $1`
 
 	err := r.db.GetContext(ctx, &group, query, groupID)
@@ -79,8 +79,8 @@ func (r *GroupRepository) GetByID(ctx context.Context, groupID uuid.UUID) (*mode
 	return &group, nil
 }
 
-func (r *GroupRepository) GetGroupMembers(ctx context.Context, groupID uuid.UUID) ([]models.User, error) {
-	var members []models.User
+func (r *GroupRepository) GetGroupMembers(ctx context.Context, groupID uuid.UUID) ([]models2.User, error) {
+	var members []models2.User
 	query := `
         SELECT u.id, u.name, u.surname, u.email 
         FROM users u
@@ -91,8 +91,8 @@ func (r *GroupRepository) GetGroupMembers(ctx context.Context, groupID uuid.UUID
 	return members, err
 }
 
-func (r *GroupRepository) GetGroupsByUserID(ctx context.Context, userID uuid.UUID) ([]models.Group, error) {
-	var groups []models.Group
+func (r *GroupRepository) GetGroupsByUserID(ctx context.Context, userID uuid.UUID) ([]models2.Group, error) {
+	var groups []models2.Group
 	query := `
         SELECT g.id, g.name, g.created_at 
         FROM groups g

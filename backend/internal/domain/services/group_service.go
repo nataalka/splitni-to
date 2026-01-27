@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nataalka/splitni-to/internal/domain"
-	"github.com/nataalka/splitni-to/internal/domain/models"
-	"github.com/nataalka/splitni-to/internal/infrastructure/postgres"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
+	models2 "github.com/nataalka/splitni-to/backend/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/infrastructure/postgres"
 )
 
 type GroupService struct {
@@ -18,8 +18,8 @@ func NewGroupService(repo *postgres.GroupRepository) *GroupService {
 	return &GroupService{repo: repo}
 }
 
-func (s *GroupService) CreateGroup(ctx context.Context, name string, creatorID uuid.UUID) (*models.Group, error) {
-	group := &models.Group{
+func (s *GroupService) CreateGroup(ctx context.Context, name string, creatorID uuid.UUID) (*models2.Group, error) {
+	group := &models2.Group{
 		ID:        uuid.New(),
 		Name:      name,
 		CreatedAt: time.Now(),
@@ -67,7 +67,7 @@ func (s *GroupService) RemoveMember(ctx context.Context, actorID, groupID, targe
 	return s.repo.RemoveMember(ctx, groupID, targetID)
 }
 
-func (s *GroupService) GetByID(ctx context.Context, userID, groupID uuid.UUID) (*models.Group, error) {
+func (s *GroupService) GetByID(ctx context.Context, userID, groupID uuid.UUID) (*models2.Group, error) {
 	isMember, err := s.repo.IsMember(ctx, groupID, userID)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (s *GroupService) GetByID(ctx context.Context, userID, groupID uuid.UUID) (
 	return s.repo.GetByID(ctx, groupID)
 }
 
-func (s *GroupService) GetMembers(ctx context.Context, userID, groupID uuid.UUID) ([]models.User, error) {
+func (s *GroupService) GetMembers(ctx context.Context, userID, groupID uuid.UUID) ([]models2.User, error) {
 	isMember, err := s.repo.IsMember(ctx, groupID, userID)
 	if err != nil {
 		return nil, err
@@ -91,6 +91,6 @@ func (s *GroupService) GetMembers(ctx context.Context, userID, groupID uuid.UUID
 	return s.repo.GetGroupMembers(ctx, groupID)
 }
 
-func (s *GroupService) GetUserGroups(ctx context.Context, userID uuid.UUID) ([]models.Group, error) {
+func (s *GroupService) GetUserGroups(ctx context.Context, userID uuid.UUID) ([]models2.Group, error) {
 	return s.repo.GetGroupsByUserID(ctx, userID)
 }

@@ -7,9 +7,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/nataalka/splitni-to/internal/domain"
-	"github.com/nataalka/splitni-to/internal/domain/models"
-	"github.com/nataalka/splitni-to/internal/domain/repositories"
+	"github.com/nataalka/splitni-to/backend/internal/domain"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
+	"github.com/nataalka/splitni-to/backend/internal/domain/repositories"
 	"golang.org/x/crypto/bcrypt"
 )
 
