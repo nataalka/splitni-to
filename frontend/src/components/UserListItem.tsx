@@ -4,10 +4,11 @@ import type { User } from "@/types";
 interface UserListItemProps {
   user: User;
   actions?: React.ReactNode;
+  subtext?: React.ReactNode;
   className?: string;
 }
 
-export function UserListItem({ user, actions, className = "" }: UserListItemProps) {
+export function UserListItem({ user, actions, subtext, className = "" }: UserListItemProps) {
   const initials = `${user.name?.[0] || ""}${user.surname?.[0] || ""}`.toUpperCase();
 
   return (
@@ -22,7 +23,7 @@ export function UserListItem({ user, actions, className = "" }: UserListItemProp
             {user.name} {user.surname}
           </p>
           <p className="text-xs text-muted-foreground truncate mt-1">
-            {user.email}
+            {subtext ? subtext : <span>{user.email}</span>}
           </p>
         </div>
       </div>

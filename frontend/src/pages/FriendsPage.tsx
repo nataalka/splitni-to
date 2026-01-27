@@ -53,11 +53,12 @@ export default function FriendsPage() {
         <UserListCard
           users={friends}
           emptyMessage={"No friends yet."}
-          renderActions={
+          renderActions={(user) => (
             <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
-                           onClick={() => rejectMutation.mutate(friend.id)}>
-            <X className="h-5 w-5"/>
-          </Button>}
+                             onClick={() => rejectMutation.mutate(user.id)}>
+              <X className="h-5 w-5"/>
+            </Button>
+          )}
         />
       </div>
 
@@ -68,18 +69,18 @@ export default function FriendsPage() {
         <UserListCard
           users={pending}
           emptyMessage={"No pending requests"}
-          renderActions={
-          <div>
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-100"
-                    onClick={() => acceptMutation.mutate(p.id)}>
-              <Check className="h-5 w-5"/>
-            </Button>
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
-                    onClick={() => rejectMutation.mutate(p.id)}>
-              <X className="h-5 w-5"/>
-            </Button>
-          </div>
-        }
+          renderActions={(user) => (
+            <div>
+              <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-100"
+                      onClick={() => acceptMutation.mutate(user.id)}>
+                <Check className="h-5 w-5"/>
+              </Button>
+              <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
+                      onClick={() => rejectMutation.mutate(user.id)}>
+                <X className="h-5 w-5"/>
+              </Button>
+            </div>
+          )}
         />
       </div>
     </div>)

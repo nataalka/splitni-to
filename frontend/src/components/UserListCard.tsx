@@ -7,10 +7,10 @@ import type { User } from "@/types";
 interface UserListCardProps {
   users: User[] | undefined;
   emptyMessage?: string;
-  renderActions: React.ReactNode;
-}
+  renderActions?: (user: User) => React.ReactNode;
+  renderSubtext?: (user: User) => React.ReactNode;}
 
-export function UserListCard({ users, emptyMessage = "No people found.", renderActions }: UserListCardProps) {
+export function UserListCard({ users, emptyMessage = "No people found.", renderActions, renderSubtext }: UserListCardProps) {
   return (
     <Card className="overflow-hidden p-2">
       {users && users.length > 0 ? (
@@ -19,7 +19,8 @@ export function UserListCard({ users, emptyMessage = "No people found.", renderA
             <React.Fragment key={user.id}>
               <UserListItem
                 user={user}
-                actions={renderActions}
+                actions={renderActions?.(user)}
+                subtext={renderSubtext?.(user)}
               />
               {index < users.length - 1 && <Separator/>}
             </React.Fragment>
