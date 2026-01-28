@@ -57,7 +57,7 @@ export default function ExpenseDetailPage() {
         <div className="flex flex-wrap items-center gap-2 mb-2">
           {/* Group Badge */}
           <span
-            className="bg-zinc-900 text-white text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded-full shadow-sm">
+            className="bg-pink-600 text-white text-[9px] font-black uppercase tracking-[0.2em] px-2 py-1 rounded-full shadow-sm">
             {expense.group.name}
           </span>
 
@@ -79,15 +79,10 @@ export default function ExpenseDetailPage() {
           <UserListItem
             user={expense.payer}
             subtext={
-              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+              <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
                 <span className="h-1 w-1 rounded-full bg-emerald-600"/>
                 Covered the whole bill
               </span>
-            }
-            actions={
-              <div className="pr-4">
-                <Wallet className="h-4 w-4 text-zinc-400"/>
-              </div>
             }
           />
         </Card>
