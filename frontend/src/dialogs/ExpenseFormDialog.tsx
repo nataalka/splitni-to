@@ -49,9 +49,10 @@ export function ExpenseFormDialog({
    open: externalOpen,
    onOpenChange: setExternalOpen
  }: ExpenseFormDialogProps) {
+  const [internalOpen, setInternalOpen] = React.useState(false)
   const isEdit = !!expense;
-  const isOpen = externalOpen ?? false;
-  const setIsOpen = setExternalOpen ?? (() => {});
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
+  const setIsOpen = setExternalOpen !== undefined ? setExternalOpen : setInternalOpen
 
   const [isManual, setIsManual] = React.useState(false)
   const [manualAmounts, setManualAmounts] = React.useState<Record<string, string>>({})
@@ -171,13 +172,13 @@ export function ExpenseFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {!isEdit && !externalOpen && (
-        <DialogTrigger asChild>
-          <Button variant="pinkPrimary">
-            <Plus className="h-4 w-4"/> Add Expense
-          </Button>
-        </DialogTrigger>
-      )}
+      {externalOpen === undefined && !isEdit && (
+          <DialogTrigger asChild>
+            <Button variant="pinkPrimary">
+              <Plus className="h-4 w-4"/> Add Expense
+            </Button>
+          </DialogTrigger>
+        )}
       <DialogContent className="sm:max-w-[450px] rounded-3xl overflow-hidden">
         <DialogHeader className="flex-row justify-start gap-2">
           <div

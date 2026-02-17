@@ -98,7 +98,7 @@ export default function GroupDetailPage() {
           </h2>
           {members && <ExpenseFormDialog groupId={id!} members={members} />}
         </div>
-        <ExpenseListCard expenses={expenses} members={members}/>
+        {expenses && members && <ExpenseListCard expenses={expenses} members={members}/> }
       </section>
 
       {/* Members */}

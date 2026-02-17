@@ -5,7 +5,7 @@ import { format } from "date-fns"
 import { sk } from "date-fns/locale"
 import { ArrowUpRight, Calendar, Receipt, Wallet } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import type { ExpenseDetailed } from "@/types"
+import type { ExpenseDetailed, User } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { StatsCard } from "@/components/StatsCard.tsx";
 import { UserListItem } from "@/components/UserListItem.tsx";
