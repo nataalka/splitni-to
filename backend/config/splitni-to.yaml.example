@@ -3,12 +3,12 @@ server:
   listen_address: :8080
 
 storage:
-  dsn: "host=localhost port=5432 user=postgres password=password dbname=splitni_to sslmode=disable"
+  dsn: "host=db port=5432 user=postgres password=password dbname=splitni-to sslmode=disable"
 
 auth:
   jwt_secret: "super-tajne-super-dlhe-tajomstvo"
 
 cors:
-allowed_origins:
- - "http://localhost:5173"
- - "http://127.0.0.1:5173"
+  allowed_origins:
+   - "http://localhost:5173"
+   - "http://127.0.0.1:5173"
