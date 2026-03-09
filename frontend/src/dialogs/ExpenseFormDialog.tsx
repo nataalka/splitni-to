@@ -259,17 +259,17 @@ export function ExpenseFormDialog({
 
                 <div className="flex items-center gap-2 bg-zinc-50 px-3 py-2 rounded-2xl border border-zinc-100">
                   <span
-                    className={`text-[10px] font-bold transition-colors ${!isManual ? "text-pink-600" : "text-zinc-400"}`}>
-                    AUTO
+                    className={`text-[10px] font-bold transition-colors ${isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                    MANUAL
                   </span>
                   <Switch
-                    checked={isManual}
+                    checked={!isManual}
                     onCheckedChange={toggleMode}
                     className="data-[state=checked]:bg-pink-600"
                   />
                   <span
-                    className={`text-[10px] font-bold transition-colors ${isManual ? "text-pink-600" : "text-zinc-400"}`}>
-                    MANUAL
+                    className={`text-[10px] font-bold transition-colors ${!isManual ? "text-pink-600" : "text-zinc-400"}`}>
+                    AUTO
                   </span>
                 </div>
               </div>
