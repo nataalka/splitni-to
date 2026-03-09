@@ -6,37 +6,29 @@ import type { User } from "@/types";
 
 interface UserListCardProps {
   users: User[] | undefined;
-  emptyMessage?: string;
   renderActions?: (user: User) => React.ReactNode;
   renderSubtext?: (user: User) => React.ReactNode;
 }
 
 export function UserListCard({
    users,
-   emptyMessage = "No people found.",
    renderActions,
    renderSubtext
  }: UserListCardProps) {
   return (
     <Card className="overflow-hidden p-2">
-      {users && users.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          {users.map((user, index) => (
-            <React.Fragment key={user.id}>
-              <UserListItem
-                user={user}
-                actions={renderActions?.(user)}
-                subtext={renderSubtext?.(user)}
-              />
-              {index < users.length - 1 && <Separator/>}
-            </React.Fragment>
-          ))}
-        </div>
-      ) : (
-        <div className="p-8 text-center">
-          <p className="text-sm text-zinc-500 italic">{emptyMessage}</p>
-        </div>
-      )}
+      <div className="flex flex-col gap-2">
+        {users.map((user, index) => (
+          <React.Fragment key={user.id}>
+            <UserListItem
+              user={user}
+              actions={renderActions?.(user)}
+              subtext={renderSubtext?.(user)}
+            />
+            {index < users.length - 1 && <Separator/>}
+          </React.Fragment>
+        ))}
+      </div>
     </Card>
   )
 }

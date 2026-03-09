@@ -10,6 +10,7 @@ import { ExpenseFormDialog } from "@/dialogs/ExpenseFormDialog.tsx";
 import { useAuth } from "@/hooks/useAuth.ts";
 import { StatsCard } from "@/components/StatsCard.tsx";
 import { GroupActions } from "@/actions/GroupActions.tsx";
+import { EmptyBox } from "@/components/EmptyBox.tsx";
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -98,7 +99,11 @@ export default function GroupDetailPage() {
           </h2>
           {members && <ExpenseFormDialog groupId={id!} members={members} />}
         </div>
-        {expenses && members && <ExpenseListCard expenses={expenses} members={members}/> }
+        {expenses && members ? (
+          <ExpenseListCard expenses={expenses} members={members}/>
+        ) : (
+          <EmptyBox description={"No expenses yet."}/>
+        )}
       </section>
 
       {/* Members */}
@@ -109,10 +114,14 @@ export default function GroupDetailPage() {
           </h2>
           <AddMemberDialog groupId={id || ""}/>
         </div>
-        <UserListCard
-          users={members}
-          emptyMessage="This group has no members yet."
-        />
+        {members ? (
+          <UserListCard
+            users={members}
+            emptyMessage="This group has no members yet."
+          />
+        ) : (
+          <EmptyBox description={"This group has no members yet."}/>
+        )}
       </section>
     </div>
   )

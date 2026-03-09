@@ -6,6 +6,7 @@ import * as React from "react"
 import { toast } from "sonner"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { AddFriendDialog } from "@/dialogs/AddFriendDialog.tsx";
+import { EmptyBox } from "@/components/EmptyBox.tsx";
 
 
 export default function FriendsPage() {
@@ -49,38 +50,44 @@ export default function FriendsPage() {
         <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-1">
           Your Friends
         </h2>
-        <UserListCard
-          users={friends}
-          emptyMessage={"No friends yet."}
-          renderActions={(user) => (
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
-                    onClick={() => rejectMutation.mutate(user.id)}>
-              <X className="h-5 w-5"/>
-            </Button>
-          )}
-        />
+        {friends && friends.length > 0 ? (
+          <UserListCard
+            users={friends}
+            renderActions={(user) => (
+              <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
+                      onClick={() => rejectMutation.mutate(user.id)}>
+                <X className="h-5 w-5"/>
+              </Button>
+            )}
+          />
+        ) : (
+          <EmptyBox description={"No friends yet."}/>
+        )}
       </div>
 
       <div className="space-y-2">
         <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-1">
           Pending Friend Requests
         </h2>
-        <UserListCard
-          users={pending}
-          emptyMessage={"No pending requests"}
-          renderActions={(user) => (
-            <div>
-              <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-100"
-                      onClick={() => acceptMutation.mutate(user.id)}>
-                <Check className="h-5 w-5"/>
-              </Button>
-              <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
-                      onClick={() => rejectMutation.mutate(user.id)}>
-                <X className="h-5 w-5"/>
-              </Button>
-            </div>
-          )}
-        />
+        {pending && pending.length > 0 ? (
+          <UserListCard
+            users={pending}
+            renderActions={(user) => (
+              <div>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600 hover:bg-green-100"
+                        onClick={() => acceptMutation.mutate(user.id)}>
+                  <Check className="h-5 w-5"/>
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600 hover:bg-red-100"
+                        onClick={() => rejectMutation.mutate(user.id)}>
+                  <X className="h-5 w-5"/>
+                </Button>
+              </div>
+            )}
+          />
+        ) : (
+          <EmptyBox description={"No pending requests."}/>
+        )}
       </div>
     </div>)
 }

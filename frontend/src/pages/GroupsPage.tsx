@@ -3,6 +3,8 @@ import api from "@/lib/api"
 import type { Group } from "@/types"
 import { GroupListCard } from "@/components/GroupListCard.tsx";
 import { GroupFormDialog } from "@/dialogs/GroupFormDialog.tsx";
+import { EmptyBox } from "@/components/EmptyBox.tsx";
+import { Users } from "lucide-react";
 
 export default function GroupsPage() {
   const {data: groups, isLoading, error} = useQuery<Group[]>({
@@ -29,7 +31,11 @@ export default function GroupsPage() {
         <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 px-1">
           Your active circles
         </h2>
-        <GroupListCard groups={groups}/>
+        {groups && groups.length > 0 ? (
+          <GroupListCard groups={groups}/>
+        ) : (
+          <EmptyBox description={"You don't have any groups yet. Start by creating one!"} Icon={Users}/>
+        )}
       </section>
     </div>)
 }
