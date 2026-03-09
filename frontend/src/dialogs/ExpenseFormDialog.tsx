@@ -283,6 +283,8 @@ export function ExpenseFormDialog({
                   users={members}
                   renderSubtext={(user) => {
                     const isSelected = watchedMembers.includes(user.id);
+                    const amountNumber = parseFloat(watchedAmount);
+                    const isAmountValid = !isNaN(amountNumber) && amountNumber > 0;
 
                     return (
                       <div className="h-8 flex items-center">
@@ -299,11 +301,11 @@ export function ExpenseFormDialog({
                             />
                             <span className="absolute right-2 top-1.5 text-pink-600">€</span>
                           </div>
-                        ) : (
+                        ) : isAmountValid ? (
                           <span className="text-pink-600">
                           owes {autoSplits.find(s => s.user_id === user.id)?.amount} €
                         </span>
-                        )}
+                        ) : null }
                       </div>
                     )
                   }}
