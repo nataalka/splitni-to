@@ -5,7 +5,7 @@ import * as z from "zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import api from "@/lib/api"
-import { Plus, Receipt } from "lucide-react"
+import { Receipt } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,12 +15,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
-import type { CreateExpenseRequest, ExpenseDetailed, User } from "@/types"
+import type { CreateExpenseRequest, ExpenseDetailed } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { Switch } from "@/components/ui/switch.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
@@ -61,8 +60,6 @@ export function ExpenseFormDialog({
     queryFn: () => api.get(`/groups/${groupId}/members`).then(res => res.data),
     enabled: !!groupId
   });
-
-  // const members = React.useMemo(() => groupData?.members || [], [groupData?.members]);
 
   const form = useForm<ExpenseValues>({
     resolver: zodResolver(expenseSchema), defaultValues: {
@@ -302,9 +299,14 @@ export function ExpenseFormDialog({
                           </div>
                         ) : isAmountValid ? (
                           <span className="text-pink-600">
-                          owes {autoSplits.find(s => s.user_id === user.id)?.amount} €
-                        </span>
-                        ) : null }
+                            Owes {autoSplits.find(s => s.user_id === user.id)?.amount} €
+                          </span>
+                        ) : (
+                          <span>
+                            Waiting for expense amount...
+                          </span>
+                        )
+                        }
                       </div>
                     )
                   }}
