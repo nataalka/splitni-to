@@ -23,9 +23,11 @@ export function GroupListItem({ group }: GroupListItemProps) {
           <h3 className="font-bold text-zinc-900 leading-tight">
             {group.name}
           </h3>
-          <p className="text-xs text-zinc-500 truncate mt-1 max-w-[200px] sm:max-w-xs">
-            {group.description || "No description provided."}
-          </p>
+          {group.description &&
+            <p className="text-xs text-zinc-500 truncate mt-1 max-w-[200px] sm:max-w-xs">
+              {group.description}
+            </p>
+          }
         </div>
       </div>
 
