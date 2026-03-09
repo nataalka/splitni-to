@@ -175,7 +175,7 @@ export function ExpenseFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[450px] rounded-3xl overflow-hidden">
+      <DialogContent className="sm:max-w-[450px] rounded-3xl overflow-hidden gap-4">
         <DialogHeader className="flex-row justify-start gap-2">
           <div
             className="h-12 w-12 rounded-2xl bg-pink-50 flex items-center justify-center text-pink-600 mb-2 border border-pink-100">
@@ -188,7 +188,7 @@ export function ExpenseFormDialog({
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
+          <FieldGroup className="gap-4">
             <div className="grid grid-cols-3 gap-4">
               {/* Description */}
               <div className="col-span-2">

@@ -61,15 +61,15 @@ export function AddFriendDialog() {
           <UserPlus className="h-4 w-4" /> Add Friend
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] rounded-3xl">
+      <DialogContent className="sm:max-w-[400px] rounded-3xl overflow-hidden gap-2">
         <DialogHeader>
-          <DialogTitle>Add a Friend</DialogTitle>
+          <DialogTitle className="text-2xl font-black">Add a Friend</DialogTitle>
           <DialogDescription>
             Enter your friend's email address to send them an invite.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup className="py-4">
+          <FieldGroup>
             <Controller
               name="email"
               control={form.control}
@@ -91,7 +91,7 @@ export function AddFriendDialog() {
             <Button
               type="submit"
               variant="pinkPrimary"
-              className="w-full sm:w-auto px-8"
+              className="w-full sm:w-auto px-8 mt-4"
               disabled={mutation.isPending}
             >
               {mutation.isPending ? "Sending..." : "Send Invite"}

@@ -18,7 +18,7 @@ export function UserListCard({
   return (
     <Card className="overflow-hidden p-2">
       <div className="flex flex-col gap-2">
-        {users.map((user, index) => (
+        {users?.map((user, index) => (
           <React.Fragment key={user.id}>
             <UserListItem
               user={user}
