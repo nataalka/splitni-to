@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import api from "@/lib/api"
 import type { Group, User, Expense, MemberBalance } from "@/types"
-import { Wallet, PieChart } from "lucide-react"
+import { Wallet, PieChart, Plus } from "lucide-react"
 import { AddMemberDialog } from "@/dialogs/AddMemberDialog.tsx"
 import { UserListCard } from "@/components/UserListCard"
 import { ExpenseListCard } from "@/components/ExpenseListCard.tsx";
@@ -11,10 +11,13 @@ import { useAuth } from "@/hooks/useAuth.ts";
 import { StatsCard } from "@/components/StatsCard.tsx";
 import { GroupActions } from "@/actions/GroupActions.tsx";
 import { EmptyBox } from "@/components/EmptyBox.tsx";
+import { useState } from "react";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { userId } = useAuth()
+  const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
 
   {/* General Info */}
   const { data: group, isLoading: groupLoading, error } = useQuery<Group>({
@@ -97,7 +100,20 @@ export default function GroupDetailPage() {
           <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 px-2">
             Recent Expenses
           </h2>
-          {members && <ExpenseFormDialog groupId={id!} members={members} />}
+
+          <Button
+            variant="pinkPrimary"
+            size="sm"
+            onClick={() => setIsExpenseDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-1"/> Add Expense
+          </Button>
+
+          <ExpenseFormDialog
+            groupId={id!}
+            open={isExpenseDialogOpen}
+            onOpenChange={setIsExpenseDialogOpen}
+          />
         </div>
         {expenses && members ? (
           <ExpenseListCard expenses={expenses} members={members}/>

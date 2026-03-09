@@ -5,14 +5,13 @@ import * as React from "react";
 
 interface GroupListItemProps {
   group: Group;
+  onClick?: (id: string) => void;
+  as?: "link" | "button";
 }
 
-export function GroupListItem({ group }: GroupListItemProps) {
-  return (
-    <Link
-      to={`/groups/${group.id}`}
-      className="group flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors"
-    >
+export function GroupListItem({ group, onClick, as }: GroupListItemProps) {
+  const content = (
+    <div className="group flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors">
       <div className="flex items-center gap-4">
         <div
           className="h-10 w-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-600 border border-pink-100 group-hover:bg-pink-100 transition-colors">
@@ -34,6 +33,14 @@ export function GroupListItem({ group }: GroupListItemProps) {
       <div className="flex items-center gap-2">
         <ChevronRight className="h-5 w-5 text-zinc-300 group-hover:text-pink-500 transition-colors"/>
       </div>
-    </Link>
+    </div>
+  )
+
+  return as && as === "button" ? (
+    <button type="button" onClick={() => onClick?.(group.id)} className="w-full text-left">
+      {content}
+    </button>
+      ) : (
+    <Link to={`/groups/${group.id}`}> {content} </Link>
   )
 }

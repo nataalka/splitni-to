@@ -5,7 +5,7 @@ import { format } from "date-fns"
 import { sk } from "date-fns/locale"
 import { ArrowUpRight, Calendar, Receipt, Wallet } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import type { ExpenseDetailed, User } from "@/types"
+import type { ExpenseDetailed } from "@/types"
 import { UserListCard } from "@/components/UserListCard.tsx";
 import { StatsCard } from "@/components/StatsCard.tsx";
 import { UserListItem } from "@/components/UserListItem.tsx";
@@ -18,12 +18,6 @@ export default function ExpenseDetailPage() {
     queryKey: ["expense", group_id, expense_id],
     queryFn: () => api.get(`/groups/${group_id}/expenses/${expense_id}`).then(res => res.data),
     enabled: !!expense_id,
-  })
-
-  const { data: groupMembers } = useQuery<User[]>({
-    queryKey: ["group", group_id, "members"],
-    queryFn: () => api.get(`/groups/${group_id}/members`).then(res => res.data),
-    enabled: !!group_id,
   })
 
   if (isLoading) return <div className="p-20 text-center animate-pulse text-zinc-400 font-medium">Loading
@@ -51,7 +45,6 @@ export default function ExpenseDetailPage() {
           <ExpenseActions
             groupId={group_id!}
             expense={expense!}
-            members={groupMembers || []}
           />
         </div>
         <div className="flex flex-wrap items-center gap-2 mb-2">

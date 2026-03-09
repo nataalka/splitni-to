@@ -10,15 +10,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { DeleteExpenseDialog } from "@/dialogs/DeleteExpenseDialog"
 import { ExpenseFormDialog } from "@/dialogs/ExpenseFormDialog"
-import type { ExpenseDetailed, User } from "@/types";
+import type { ExpenseDetailed } from "@/types";
 
 interface ExpenseActionsProps {
   groupId: string
   expense: ExpenseDetailed
-  members: User[]
 }
 
-export function ExpenseActions({ groupId, expense, members }: ExpenseActionsProps) {
+export function ExpenseActions({ groupId, expense }: ExpenseActionsProps) {
   const [showDelete, setShowDelete] = React.useState(false)
   const [showEdit, setShowEdit] = React.useState(false)
 
@@ -63,7 +62,6 @@ export function ExpenseActions({ groupId, expense, members }: ExpenseActionsProp
         <ExpenseFormDialog
           key={showEdit ? `edit-${expense.id}` : 'add'}
           groupId={groupId}
-          members={members}
           expense={expense}
           open={showEdit}
           onOpenChange={setShowEdit}

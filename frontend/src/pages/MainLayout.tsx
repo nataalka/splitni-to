@@ -1,12 +1,18 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, Users, Plus, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GroupSelectDialog } from "@/dialogs/GroupSelectDialog.tsx";
+import { ExpenseFormDialog } from "@/dialogs/ExpenseFormDialog.tsx";
+import * as React from "react";
 
 export default function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const canGoBack = location.pathname !== "/groups" && location.pathname !== "/friends";
+  const [isGroupSelectOpen, setIsGroupSelectOpen] = React.useState(false);
+  const [selectedGroupId, setSelectedGroupId] = React.useState<string | null>(null);
+  const [isExpenseOpen, setIsExpenseOpen] = React.useState(false);
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50 font-sans">
@@ -47,7 +53,7 @@ export default function MainLayout() {
 
         <div className="relative -top-5">
           <button
-            onClick={() => navigate("/add-expense")} // Alebo otvor dialóg
+            onClick={() => setIsGroupSelectOpen(true)}
             className="h-14 w-14 bg-pink-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-pink-200 active:scale-95 transition-transform"
           >
             <Plus className="h-8 w-8" />
@@ -62,6 +68,24 @@ export default function MainLayout() {
           <span className="text-[10px] font-medium">Groups</span>
         </button>
       </nav>
+
+      <GroupSelectDialog
+        open={isGroupSelectOpen}
+        onOpenChange={setIsGroupSelectOpen}
+        onGroupSelected={(groupId) => {
+          setSelectedGroupId(groupId);
+          setIsGroupSelectOpen(false);
+          setIsExpenseOpen(true);
+        }}
+      />
+
+      {selectedGroupId && (
+        <ExpenseFormDialog
+          groupId={selectedGroupId}
+          open={isExpenseOpen}
+          onOpenChange={setIsExpenseOpen}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import api from "@/lib/api"
 import { Plus, Receipt } from "lucide-react"
@@ -36,7 +36,6 @@ type ExpenseValues = z.infer<typeof expenseSchema>
 
 interface ExpenseFormDialogProps {
   groupId: string;
-  members: User[];
   expense?: ExpenseDetailed;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -44,7 +43,6 @@ interface ExpenseFormDialogProps {
 
 export function ExpenseFormDialog({
    groupId,
-   members,
    expense,
    open: externalOpen,
    onOpenChange: setExternalOpen
@@ -57,6 +55,14 @@ export function ExpenseFormDialog({
   const [isManual, setIsManual] = React.useState(false)
   const [manualAmounts, setManualAmounts] = React.useState<Record<string, string>>({})
   const queryClient = useQueryClient()
+
+  const { data: members } = useQuery({
+    queryKey: ["group", groupId, "members"],
+    queryFn: () => api.get(`/groups/${groupId}/members`).then(res => res.data),
+    enabled: !!groupId
+  });
+
+  // const members = React.useMemo(() => groupData?.members || [], [groupData?.members]);
 
   const form = useForm<ExpenseValues>({
     resolver: zodResolver(expenseSchema), defaultValues: {
@@ -172,13 +178,6 @@ export function ExpenseFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {externalOpen === undefined && !isEdit && (
-          <DialogTrigger asChild>
-            <Button variant="pinkPrimary">
-              <Plus className="h-4 w-4"/> Add Expense
-            </Button>
-          </DialogTrigger>
-        )}
       <DialogContent className="sm:max-w-[450px] rounded-3xl overflow-hidden">
         <DialogHeader className="flex-row justify-start gap-2">
           <div
@@ -339,7 +338,7 @@ export function ExpenseFormDialog({
             </div>
           </FieldGroup>
 
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <Button type="submit" variant="pinkPrimary" className="w-full" disabled={mutation.isPending}>
               {mutation.isPending ? "Adding..." : "Save Expense"}
             </Button>
