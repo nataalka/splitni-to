@@ -1,0 +1,20 @@
+package repositories
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/nataalka/splitni-to/backend/internal/domain/models"
+	"github.com/shopspring/decimal"
+)
+
+type ExpenseRepository interface {
+	CreateWithSplits(ctx context.Context, e *models.Expense) error
+	Update(ctx context.Context, expense *models.Expense, splits []models.ExpenseSplit) error
+	Delete(ctx context.Context, expenseID uuid.UUID) error
+	GetByGroup(ctx context.Context, groupID uuid.UUID) ([]models.Expense, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*models.Expense, error)
+	GetBalancesData(ctx context.Context, groupID uuid.UUID) (map[uuid.UUID]decimal.Decimal, error)
+	GetTotalByGroup(ctx context.Context, groupID uuid.UUID) (decimal.Decimal, error)
+	GetUserBalance(ctx context.Context, groupID uuid.UUID, userID uuid.UUID) (decimal.Decimal, error)
+}

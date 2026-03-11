@@ -28,5 +28,31 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+ .idea/
+ .vscode/
+
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# Configuration files
+backend/config/splitni-to.yaml
+
+# Binaries
+bin/
+/splitni-to
+
+#Frontend
+node_modules/
+frontend/node_modules/
+
+frontend/dist/
+frontend/package-lock.json
+
+backend/.idea
+frontend/.idea

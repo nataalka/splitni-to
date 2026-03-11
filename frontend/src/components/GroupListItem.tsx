@@ -1,0 +1,46 @@
+import type { Group } from "@/types";
+import { ChevronRight, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import * as React from "react";
+
+interface GroupListItemProps {
+  group: Group;
+  onClick?: (id: string) => void;
+  as?: "link" | "button";
+}
+
+export function GroupListItem({ group, onClick, as }: GroupListItemProps) {
+  const content = (
+    <div className="group flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors">
+      <div className="flex items-center gap-4">
+        <div
+          className="h-10 w-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-600 border border-pink-100 group-hover:bg-pink-100 transition-colors">
+          <Users className="h-6 w-6"/>
+        </div>
+
+        <div className="min-w-0">
+          <h3 className="font-bold text-zinc-900 leading-tight">
+            {group.name}
+          </h3>
+          {group.description &&
+            <p className="text-xs text-zinc-500 truncate mt-1 max-w-[200px] sm:max-w-xs">
+              {group.description}
+            </p>
+          }
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <ChevronRight className="h-5 w-5 text-zinc-300 group-hover:text-pink-500 transition-colors"/>
+      </div>
+    </div>
+  )
+
+  return as && as === "button" ? (
+    <button type="button" onClick={() => onClick?.(group.id)} className="w-full text-left">
+      {content}
+    </button>
+      ) : (
+    <Link to={`/groups/${group.id}`}> {content} </Link>
+  )
+}
